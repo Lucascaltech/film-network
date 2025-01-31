@@ -1,36 +1,34 @@
+version: '3.8'
+
 services:
   postgres:
     container_name: postgres-sql-fsn
-    image: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: luca
       POSTGRES_PASSWORD: luca
-      PGDATA: /var/lib/postgresql/data
       POSTGRES_DB: film_social_network
+
     volumes:
-      - postgres:/data/postgres
-    ports:
-      - 5432:5432
+      - postgres:/var/lib/postgresql/data
     networks:
       - spring-demo
-    restart: unless-stopped
+
   mail-dev:
     container_name: mail-dev-fsn
     image: maildev/maildev
     ports:
-      - 1080:1080
-      - 1025:1025
-
+      - "1080:1080"  # Port for web interface
+      - "1025:1025"  # SMTP port
+    networks:
+      - spring-demo
 
 networks:
   spring-demo:
     driver: bridge
 
-
-
-
 volumes:
   postgres:
     driver: local
-
-

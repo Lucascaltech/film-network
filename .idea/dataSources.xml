@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="film_social_network@localhost" uuid="9c6ead94-8f7a-4f7a-8ff9-81859d21a92a">
+    <data-source source="LOCAL" name="File Social Network" uuid="a2201093-f721-41e8-8c0a-2f4027f503ca">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>$PROJECT_DIR$/../film-social-network/film-network/src/main/resources/application-dev.yml</remarks>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/film_social_network</jdbc-url>
       <jdbc-additional-properties>
