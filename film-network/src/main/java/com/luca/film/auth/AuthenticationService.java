@@ -4,19 +4,28 @@ import com.luca.film.email.EmailService;
 import com.luca.film.email.EmailTemplateName;
 import com.luca.film.role.Role;
 import com.luca.film.role.RoleRepository;
+import com.luca.film.security.JwtService;
 import com.luca.film.user.Token;
 import com.luca.film.user.TokenRepository;
 import com.luca.film.user.User;
 import com.luca.film.user.UserRepository;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.beans.Transient;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +36,8 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Value("${application.mailing.frontend.activation-url}")
     private String activationUrl;
@@ -109,5 +120,52 @@ public class AuthenticationService {
         }
 
         return codeBuilder.toString();
+    }
+
+
+    /**
+     * Authenticate a user with the given credentials
+     * @param request the authentication request
+     * @return the authentication response
+     */
+    public AuthenticationResponse authenticate(@Valid AuthenticateRequest request) {
+
+        Authentication auth  =  authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword())
+        );
+
+        Map<String, Object> claims = new HashMap<>();
+        User user = (User) auth.getPrincipal();
+        claims.put("fullName", user.getFullName());
+        String jwt = jwtService.generateToken(claims,user);
+
+        return AuthenticationResponse.builder().token(jwt).build();
+    }
+
+
+    /**
+     * Confirm the account with the given token
+     * @param token the token
+     */
+    @Transient
+    public void confirmAccount(String token) throws MessagingException {
+        Token savedToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalStateException("Token not found"));
+
+        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+            sendValidationEmail(savedToken.getUser());
+            throw new IllegalStateException("Activation token has expired. A new token has been sent.");
+        }
+
+        User user = userRepository.findById(savedToken.getUser().getId())
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
+        user.setEnabled(true);
+        user.setAccountLocked(false);
+        userRepository.save(user);
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
     }
 }

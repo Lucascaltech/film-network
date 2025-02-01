@@ -79,7 +79,7 @@ public class JwtService {
      * @param userDetails the user details
      * @return the token
      */
-    private  String generateToken(
+    public  String generateToken(
             Map<String, Object> claims,
             UserDetails userDetails
     ) {

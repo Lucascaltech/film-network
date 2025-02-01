@@ -35,6 +35,24 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
+    /**
+     * Authenticate the user account with the token
+     * @param request the authentication request
+     * @return the authentication response
+     */
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody @Valid AuthenticateRequest request
+
+    ){
+        return ResponseEntity.ok(service.authenticate(request));
+    }
+
+    @GetMapping("/activate-account")
+    public void confirmAccount(@RequestParam("token") String token) throws MessagingException {
+        service.confirmAccount(token);
+    }
+
 
 }
 
