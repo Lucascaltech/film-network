@@ -55,7 +55,6 @@ public class User implements UserDetails, Principal {
         return email;
     }
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles
