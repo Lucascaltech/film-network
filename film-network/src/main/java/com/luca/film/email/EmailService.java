@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,11 +19,20 @@ import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE
 
 @Service
 @RequiredArgsConstructor
-
 public class EmailService {
-    private final JavaMailSender mailSender;
+    public final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
+    /**
+     * Email the given address
+     * @param to email address
+     * @param username username
+     * @param emailTemplate email template
+     * @param confirmationUrl confirmation url
+     * @param activationCode activation code
+     * @param subject email subject
+     * @throws MessagingException if an error occurs
+     */
     @Async
     public void sendEmail(
             String to,
@@ -34,6 +42,7 @@ public class EmailService {
             String activationCode,
             String subject
     ) throws MessagingException {
+
         String templateName;
         if (emailTemplate == null) {
             templateName = "confirm-email";
@@ -50,20 +59,14 @@ public class EmailService {
         properties.put("username", username);
         properties.put("confirmationUrl", confirmationUrl);
         properties.put("activation_code", activationCode);
-
         Context context = new Context();
         context.setVariables(properties);
-
-        helper.setFrom("contact@lucascal.com");
+        helper.setFrom("osamabinazamarain@gmail.com");
         helper.setTo(to);
         helper.setSubject(subject);
-
         String template = templateEngine.process(templateName, context);
-
         helper.setText(template, true);
-
         mailSender.send(mimeMessage);
-
     }
 
 }

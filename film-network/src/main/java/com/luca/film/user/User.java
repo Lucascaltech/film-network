@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "_user")
 @EntityListeners(AuditingEntityListener.class)
-
 public class User implements UserDetails, Principal {
 
     @Id
@@ -55,6 +54,7 @@ public class User implements UserDetails, Principal {
     public String getName() {
         return email;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -89,7 +89,11 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
-    public String fullName() {
+    /**
+     * Get the full name of the user
+     * @return the full name
+     */
+    public String getFullName() {
         return firstname + " " + lastname;
     }
 

@@ -1,17 +1,13 @@
 package com.luca.film.security;
 
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -19,9 +15,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
-@EnableWebFluxSecurity
+@EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
-
 public class SecurityConfig {
 
     private final JwtFilter jwtAuthFilter;
@@ -32,6 +27,12 @@ public class SecurityConfig {
         this.authenticationProvider = authenticationProvider;
     }
 
+    /**
+     * Configure the security filter chain for the application
+     * @param http the http security configuration
+     * @return the security filter chain
+     * @throws Exception if an error occurs while configuring the security filter chain
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -52,7 +53,7 @@ public class SecurityConfig {
                                             "/swagger-ui.html"
                             ).permitAll()
                                     .anyRequest()
-                                        .authenticated()
+                                    .authenticated()
                         )
                 .sessionManagement(session->session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

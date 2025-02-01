@@ -1,7 +1,6 @@
 package com.luca.film.config;
 
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,6 +17,10 @@ public class BeansConfig {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * Create an authentication provider
+     * @return the authentication provider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -26,6 +29,10 @@ public class BeansConfig {
         return authProvider;
     }
 
+    /**
+     * Create a password encoder
+     * @return the password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

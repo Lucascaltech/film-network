@@ -1,30 +1,29 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/film_network
-    username: username
-    password: password
+    url: jdbc:postgresql://localhost:5432/film_social_network
+    username: luca
+    password: luca
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
   mail:
     host: localhost
     port: 1025
-    username: luca
-    password: luca
     properties:
       mail:
         smtp:
-          trust: "*"
-        auth: true
-        starttls:
-          enabled: true
+          auth: false
+          starttls:
+            enable: false
         connectiontimeout: 5000
         timeout: 3000
         writetimeout: 5000
@@ -33,11 +32,18 @@ application:
   security:
     jwt:
       secret-key: abf7a0936393bf1f6143137367ccbdf3985d6379ce772634f5eff2131880604b
-      expiration: 8640000
+      expiration: 86400000
+
   mailing:
     frontend:
       activation-url: http://localhost:4200/activate-account
+
   server:
     port: 8088
 
-
+logging:
+  level:
+    org:
+      springframework: INFO
+    com:
+      luca: DEBUG

@@ -4,15 +4,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -32,6 +29,14 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
 
+    /**
+     * Filter the request and check if the JWT token is valid
+     * @param request the request to filter
+     * @param response the response to send
+     * @param filterChain the filter chain to continue the request
+     * @throws ServletException if an error occurs while filtering the request
+     * @throws IOException if an error occurs while filtering the request
+     */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -52,6 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
+
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {

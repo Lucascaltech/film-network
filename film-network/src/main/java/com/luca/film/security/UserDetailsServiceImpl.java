@@ -17,6 +17,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.repository = repository;
     }
 
+    /**
+     * Load the user by email from the database
+     * @param userEmail the email of the user
+     * @return the user details
+     * @throws UsernameNotFoundException if the user is not found
+     */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
