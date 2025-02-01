@@ -1,5 +1,6 @@
 package com.luca.film.feedback;
 
+import com.luca.film.book.Book;
 import com.luca.film.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,4 +19,9 @@ import java.time.LocalDateTime;
 public class Feedback  extends BaseEntity {
     private Double star;
     private String comment;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
 }

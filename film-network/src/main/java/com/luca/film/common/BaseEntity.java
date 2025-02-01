@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@Entity
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
     @Id

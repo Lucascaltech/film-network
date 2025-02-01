@@ -48,6 +48,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
+    /**
+     * Confirm the account with the token
+     * @param token the token to confirm the account
+     * @throws MessagingException if an error occurs while sending the email
+     */
     @GetMapping("/activate-account")
     public void confirmAccount(@RequestParam("token") String token) throws MessagingException {
         service.confirmAccount(token);
