@@ -1,9 +1,11 @@
 package com.luca.film.feedback;
 
+import com.luca.film.common.PageResponse;
 import com.luca.film.feedback.dto.FilmFeedbackRequest;
 import com.luca.film.feedback.dto.FilmFeedbackResponse;
 import com.luca.film.film.Film;
 import com.luca.film.film.FilmRepository;
+import com.luca.film.film.exceptions.OperationNotPermittedException;
 import com.luca.film.user.User;
 import com.luca.film.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * Service layer for managing Film Feedback records.
@@ -36,15 +39,21 @@ public class FilmFeedbackService {
      * @return the created FilmFeedbackResponse DTO
      */
     @Transactional
-    public FilmFeedbackResponse createFeedback(FilmFeedbackRequest request) {
+    public FilmFeedbackResponse createFeedback(FilmFeedbackRequest request, Authentication authentication) {
         // Retrieve associated Film and User entities
         Film film = filmRepository.findById(request.filmId())
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + request.filmId()));
-        User user = userRepository.findById(request.userId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + request.userId()));
+
+        if (film.isArchive()){
+            throw new OperationNotPermittedException("you can not give feedback to archived film");
+        }
+        User user = (User) authentication.getPrincipal();
+        if(Objects.equals(film.getAddedBy(), user)){
+            throw  new OperationNotPermittedException("You can give feedback to your own film");
+        }
         // Map and save the feedback
-        com.luca.film.feedback.FilmFeedback feedback = filmFeedbackMapper.toFilmFeedback(request, film, user);
-        com.luca.film.feedback.FilmFeedback saved = filmFeedbackRepository.save(feedback);
+        FilmFeedback feedback = filmFeedbackMapper.toFilmFeedback(request, film, user);
+        FilmFeedback saved = filmFeedbackRepository.save(feedback);
         return filmFeedbackMapper.toFilmFeedbackResponse(saved);
     }
 
@@ -69,7 +78,7 @@ public class FilmFeedbackService {
         return filmFeedbackRepository.findAll()
                 .stream()
                 .map(filmFeedbackMapper::toFilmFeedbackResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -110,11 +119,19 @@ public class FilmFeedbackService {
      * @param size   the number of feedback records per page
      * @return a list of FilmFeedbackResponse DTOs
      */
-    public List<FilmFeedbackResponse> getFeedbackForFilmContent(Integer filmId, int page, int size) {
+    public PageResponse<FilmFeedbackResponse> getFeedbackForFilmContent(Integer filmId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<FilmFeedback> feedbackPage = filmFeedbackRepository.findByFilm_Id(filmId, pageable);
-        return feedbackPage.stream()
+        return new PageResponse<>(
+                feedbackPage.stream()
                 .map(filmFeedbackMapper::toFilmFeedbackResponse)
-                .collect(Collectors.toList());
+                .toList(),
+                feedbackPage.getNumber(),
+                feedbackPage.getSize(),
+                feedbackPage.getTotalElements(),
+                feedbackPage.getTotalPages(),
+                feedbackPage.isFirst(),
+                feedbackPage.isLast()
+        );
     }
 }

@@ -12,9 +12,6 @@ public record FilmFeedbackRequest(
         @NotNull(message = "Film id is required")
         Integer filmId,
 
-        @NotNull(message = "User id is required")
-        Integer userId,
-
         @NotNull(message = "Rating is required")
         @Min(value = 0, message = "Rating must be at least 0")
         @Max(value = 5, message = "Rating must be at most 5")

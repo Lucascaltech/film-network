@@ -35,7 +35,7 @@ public class FilmFeedbackMapper {
      * @param feedback the FilmFeedback entity
      * @return the FilmFeedbackResponse DTO
      */
-    public FilmFeedbackResponse toFilmFeedbackResponse(com.luca.film.feedback.FilmFeedback feedback) {
+    public FilmFeedbackResponse toFilmFeedbackResponse(FilmFeedback feedback) {
         return FilmFeedbackResponse.builder()
                 .id(feedback.getId())
                 .rating(feedback.getRating())

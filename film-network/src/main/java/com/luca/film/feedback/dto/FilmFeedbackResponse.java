@@ -17,6 +17,7 @@ public class FilmFeedbackResponse {
     private String review;
     private Integer filmId;
     private Integer userId;
+    private boolean ownFeedback;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 }
