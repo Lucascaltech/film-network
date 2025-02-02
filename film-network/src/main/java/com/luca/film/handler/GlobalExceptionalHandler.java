@@ -1,5 +1,6 @@
 package com.luca.film.handler;
 
+import com.luca.film.film.exceptions.OperationNotPermittedException;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,6 +93,21 @@ public class GlobalExceptionalHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ExceptionResponse
                         .builder().validationErrors(validationErrors)
+                        .build());
+    }
+
+     /**
+     * Handle the OperationNotPermittedException.
+     *
+     * @param e the OperationNotPermittedException thrown by the application
+     * @return a ResponseEntity with FORBIDDEN status and error details
+     */
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleOperationNotPermittedException(OperationNotPermittedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ExceptionResponse.builder()
+                        .errorCode(BusinessErrorCodes.OPERATION_NOT_PERMITTED.getErrorCode())
+                        .errorMessage(e.getMessage())
                         .build());
     }
 

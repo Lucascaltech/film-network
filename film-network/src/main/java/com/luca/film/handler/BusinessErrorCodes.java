@@ -17,7 +17,10 @@ public enum BusinessErrorCodes {
     ACCOUNT_DISABLED(2002, "Account disabled", HttpStatus.FORBIDDEN),
 
     // Authentication errors (starting at 3001)
-    BAD_CREDENTIALS(3001, "Bad credentials", HttpStatus.UNAUTHORIZED);
+    BAD_CREDENTIALS(3001, "Bad credentials", HttpStatus.UNAUTHORIZED),
+
+    // Operation errors (starting at 4001)
+    OPERATION_NOT_PERMITTED(4001, "Operation not permitted", HttpStatus.FORBIDDEN);
 
     @Getter
     private final int errorCode;

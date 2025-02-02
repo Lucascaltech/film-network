@@ -1,13 +1,12 @@
 package com.luca.film.feedback;
 
-import com.luca.film.book.Book;
+import com.luca.film.film.Film;
 import com.luca.film.common.BaseEntity;
+import com.luca.film.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,12 +15,16 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Feedback  extends BaseEntity {
-    private Double star;
-    private String comment;
+public class FilmFeedback extends BaseEntity {
+    private Double rating;  // 0-5 stars
+    private String review;
 
     @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
+    @JoinColumn(name = "film_id")
+    private Film film;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

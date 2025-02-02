@@ -3,6 +3,7 @@ package com.luca.film.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -50,6 +51,15 @@ public class BeansConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    /**
+     * Create an auditor aware bean
+     * @return the auditor aware bean
+     */
+    @Bean
+    public AuditorAware<Integer> auditorAware() {
+        return new ApplicationAuditAware();
     }
 
 }

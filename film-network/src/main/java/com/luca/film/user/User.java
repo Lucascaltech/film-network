@@ -1,7 +1,7 @@
 package com.luca.film.user;
 
-import com.luca.film.book.Book;
-import com.luca.film.book.BookTransactionHistory;
+import com.luca.film.film.Film;
+import com.luca.film.film.FilmRentalHistory;
 import com.luca.film.role.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,11 +44,11 @@ public class User implements UserDetails, Principal {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "owner")
-    private List<Book> books;
+    @OneToMany(mappedBy = "addedBy")
+    private List<Film> uploadedFilms;
 
     @OneToMany(mappedBy = "user")
-    private List<BookTransactionHistory> histories;
+    private List<FilmRentalHistory> rentalHistory;
 
     @CreatedDate
     @Column(nullable=false, updatable=false)
