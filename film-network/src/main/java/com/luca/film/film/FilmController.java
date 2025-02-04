@@ -1,10 +1,11 @@
 package com.luca.film.film;
 
+import com.luca.film.common.PageResponse;
 import com.luca.film.film.dto.FilmRequest;
 import com.luca.film.film.dto.FilmResponse;
+import com.luca.film.film.dto.RentedFilmResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.Multipart;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,14 +33,9 @@ public class FilmController {
      * @return a ResponseEntity containing the created Film's ID and HTTP status
      */
     @PostMapping
-    public ResponseEntity<?> createFilm( @RequestBody @Valid FilmRequest filmRequest, Authentication authentication) {
-        try {
+    public ResponseEntity<Integer> createFilm( @RequestBody @Valid FilmRequest filmRequest, Authentication authentication) {
             Integer filmId = filmService.save(filmRequest, authentication);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Film created with ID: " + filmId);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while creating the film: " + ex.getMessage());
-        }
+            return ResponseEntity.status(HttpStatus.CREATED).body(filmId);
     }
 
     /**
@@ -49,17 +45,10 @@ public class FilmController {
      * @return a ResponseEntity containing the FilmResponse DTO
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFilmById(@PathVariable Integer id) {
-        try {
+    public ResponseEntity<FilmResponse> getFilmById(@PathVariable Integer id) {
             FilmResponse filmResponse = filmService.getById(id);
             return ResponseEntity.ok(filmResponse);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Film not found with ID: " + id);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving the film: " + ex.getMessage());
-        }
+
     }
 
     /**
@@ -71,17 +60,12 @@ public class FilmController {
      * @return a ResponseEntity containing a list of FilmResponse DTOs
      */
     @GetMapping
-    public ResponseEntity<?> getAllFilms(
+    public ResponseEntity<PageResponse<FilmResponse>> getAllFilms(
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
             ,@RequestParam(name="size" , defaultValue = "10", required = false) Integer size
             ,Authentication authenticatedUser
     ) {
-        try {
             return ResponseEntity.ok(filmService.getAllFilms(page, size, authenticatedUser));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving films: " + ex.getMessage());
-        }
     }
 
     /**
@@ -93,17 +77,12 @@ public class FilmController {
      * @return a ResponseEntity containing a list of FilmResponse DTOs
      */
     @GetMapping("/own")
-    public ResponseEntity<?> getAllFilmsYouOwn(
+    public ResponseEntity<PageResponse<FilmResponse>> getAllFilmsYouOwn(
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
             ,@RequestParam(name="size" , defaultValue = "10", required = false) Integer size
             ,Authentication authenticatedUser
     ) {
-        try {
             return ResponseEntity.ok(filmService.getAllFilmsYouOwn(page, size, authenticatedUser));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving films: " + ex.getMessage());
-        }
     }
 
     /**
@@ -115,19 +94,11 @@ public class FilmController {
      * @return a ResponseEntity containing the updated FilmResponse DTO
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFilm(@PathVariable Integer id,
+    public ResponseEntity<FilmResponse> updateFilm(@PathVariable Integer id,
                                         @Valid @RequestBody FilmRequest filmRequest,
                                         Authentication authentication) {
-        try {
             FilmResponse updatedFilm = filmService.update(id, filmRequest, authentication);
             return ResponseEntity.ok(updatedFilm);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Film not found with ID: " + id);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while updating the film: " + ex.getMessage());
-        }
     }
 
     /**
@@ -151,34 +122,32 @@ public class FilmController {
     }
 
     /**
+     * Retrieves all films that are rented or not rented.
      *
-     * @param rented
-     * @param page
-     * @param size
-     * @param authentication
-     * @return
+     * @param rented the rented status of the films to retrieve
+     * @param page the page number
+     * @param size the size of the page
+     * @param authentication the authentication object representing the current user
+     * @return a ResponseEntity containing a list of FilmResponse DTOs
      */
     @GetMapping("/user/rented")
-    public ResponseEntity<?> getAllRentedFilms(
+    public ResponseEntity<PageResponse<RentedFilmResponse>> getAllRentedFilms(
             @RequestParam(value = "rented") boolean rented,
              @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name="size" , defaultValue = "10", required = false) Integer size,
             Authentication authentication
     )
     {
-         try {
+
             return ResponseEntity.ok(filmService.getAllRentedFilms(page, size, authentication, rented));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while retrieving films: " + ex.getMessage());
-        }
     }
 
     /**
+     * Retrieves all films that are rented or not rented.
      *
-     * @param filmId
-     * @param authentication
-     * @return
+     * @param filmId the film ID
+     * @param authentication the authentication object representing the current user
+     * @return a ResponseEntity containing a list of FilmResponse DTOs
      */
     @PatchMapping("/archived/{filmId}")
     public ResponseEntity<Integer> updateArchivedStatus(
@@ -189,10 +158,11 @@ public class FilmController {
     }
 
     /**
+     * Rents a film.
      *
-     * @param filmId
-     * @param authentication
-     * @return
+     * @param filmId the ID of the film to rent
+     * @param authentication  the authentication object representing the current user
+     * @return  a ResponseEntity containing the updated FilmResponse DTO
      */
     @PostMapping("/rent/{filmId}")
     public ResponseEntity<Integer> rentFilm(
@@ -202,6 +172,12 @@ public class FilmController {
         return ResponseEntity.ok(filmService.rentFilm(filmId, authentication));
     }
 
+    /**
+     * Returns a rented film.
+     * @param filmId the ID of the film to return
+     * @param authentication the authentication object representing the current user
+     * @return a ResponseEntity containing the updated FilmResponse DTO
+     */
     @PatchMapping("/rent/return/{filmId}")
     public ResponseEntity<Integer> returnRentedFilm(
             @PathVariable("filmId") Integer filmId,
@@ -219,13 +195,13 @@ public class FilmController {
     }
 
     @PostMapping(value = "/poster/{filmId}", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadPoster(
+    public ResponseEntity<Integer> uploadPoster(
             @PathVariable("filmId") Integer filmId,
             @Parameter()
             @RequestPart("file") MultipartFile file,
             Authentication authentication
             ){
         filmService.uploadFilmPoster(file, filmId, authentication);
-        return ResponseEntity.status(HttpStatus.CREATED).body("The film poster is created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(filmId);
     }
 }

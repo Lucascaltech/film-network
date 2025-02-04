@@ -49,3 +49,8 @@ logging:
       springframework: INFO
     com:
       luca: DEBUG
+
+springdoc:
+  swagger-ui:
+    default-model-expand-depth: 1
+    default-model-rendering: model

@@ -25,7 +25,7 @@ public class Film extends BaseEntity {
     private String imdbId;
     private String synopsis;
     private String filmPoster;
-    private Year year;
+    private String year;
     private boolean archive;
     private Double rating;
 

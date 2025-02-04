@@ -21,7 +21,7 @@ public class FilmResponse {
     private String imdbId;
     private String synopsis;
     private byte[] filmPoster;
-    private Year year;
+    private String year;
     private boolean archive;
     private Double rating;
     private Genre genre;

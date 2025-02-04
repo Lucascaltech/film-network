@@ -7,7 +7,6 @@ import com.luca.film.user.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,18 +32,14 @@ public class FilmFeedbackController {
      * @return a ResponseEntity containing the created FilmFeedbackResponse DTO and HTTP status
      */
     @PostMapping
-    public ResponseEntity<?> createFeedback(@Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
-        try {
-            FilmFeedbackResponse response = filmFeedbackService.createFeedback(request,authentication);
-            User user = (User) authentication.getPrincipal();
-            if (response.getUserId().equals(user.getId())){
-                response.setOwnFeedback(true);
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error creating feedback: " + ex.getMessage());
+    public ResponseEntity<FilmFeedbackResponse> createFeedback(@Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
+
+        FilmFeedbackResponse response = filmFeedbackService.createFeedback(request, authentication);
+        User user = (User) authentication.getPrincipal();
+        if (response.getUserId().equals(user.getId())) {
+            response.setOwnFeedback(true);
         }
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
@@ -54,21 +49,14 @@ public class FilmFeedbackController {
      * @return a ResponseEntity containing the FilmFeedbackResponse DTO
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFeedbackById(@PathVariable Integer id, Authentication authentication) {
-        try {
-            FilmFeedbackResponse response = filmFeedbackService.getFeedbackById(id);
-            User user = (User) authentication.getPrincipal();
-            if (response.getUserId().equals(user.getId())){
-                response.setOwnFeedback(true);
-            }
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Feedback not found with id: " + id);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedback: " + ex.getMessage());
+    public ResponseEntity<FilmFeedbackResponse> getFeedbackById(@PathVariable Integer id, Authentication authentication) {
+
+        FilmFeedbackResponse response = filmFeedbackService.getFeedbackById(id);
+        User user = (User) authentication.getPrincipal();
+        if (response.getUserId().equals(user.getId())) {
+            response.setOwnFeedback(true);
         }
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -77,23 +65,18 @@ public class FilmFeedbackController {
      * @return a ResponseEntity containing a list of FilmFeedbackResponse DTOs
      */
     @GetMapping
-    public ResponseEntity<?> getAllFeedback(Authentication authentication) {
+    public ResponseEntity<List<FilmFeedbackResponse>> getAllFeedback(Authentication authentication) {
 
-        try {
-            User user = (User) authentication.getPrincipal();
-            List<FilmFeedbackResponse> responses = filmFeedbackService.getAllFeedback();
-            responses.stream().forEach(
-                    feedback -> {
-                        if (user.getId().equals(feedback.getUserId())){
-                            feedback.setOwnFeedback(true);
-                        }
+        User user = (User) authentication.getPrincipal();
+        List<FilmFeedbackResponse> responses = filmFeedbackService.getAllFeedback();
+        responses.forEach(
+                feedback -> {
+                    if (user.getId().equals(feedback.getUserId())) {
+                        feedback.setOwnFeedback(true);
                     }
-            );
-            return ResponseEntity.ok(responses);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error retrieving feedbacks: " + ex.getMessage());
-        }
+                }
+        );
+        return ResponseEntity.ok(responses);
     }
 
     /**
@@ -104,21 +87,14 @@ public class FilmFeedbackController {
      * @return a ResponseEntity containing the updated FilmFeedbackResponse DTO
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFeedback(@PathVariable Integer id, @Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
-        try {
-            User user = (User) authentication.getPrincipal();
-            FilmFeedbackResponse response = filmFeedbackService.updateFeedback(id, request);
-            if (user.getId().equals(response.getUserId())){
-                response.setOwnFeedback(true);
-            }
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Feedback not found with id: " + id);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating feedback: " + ex.getMessage());
+    public ResponseEntity<FilmFeedbackResponse> updateFeedback(@PathVariable Integer id, @Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
+
+        User user = (User) authentication.getPrincipal();
+        FilmFeedbackResponse response = filmFeedbackService.updateFeedback(id, request);
+        if (user.getId().equals(response.getUserId())) {
+            response.setOwnFeedback(true);
         }
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -128,44 +104,32 @@ public class FilmFeedbackController {
      * @return a ResponseEntity with HTTP status 204 if deletion is successful
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFeedback(@PathVariable Integer id) {
-        try {
-            filmFeedbackService.deleteFeedback(id);
-            return ResponseEntity.noContent().build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Feedback not found with id: " + id);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error deleting feedback: " + ex.getMessage());
-        }
+    public ResponseEntity<Object> deleteFeedback(@PathVariable Integer id) {
+        filmFeedbackService.deleteFeedback(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
      * Get all feedback of given film id.
+     *
      * @param filmId film identifier
-     * @param page page number
-     * @param size size of the page
+     * @param page   page number
+     * @param size   size of the page
      * @return Film Feedback Response
      */
     @GetMapping("/film/{filmId}")
-   public ResponseEntity<?> getFeedbackForFilm(
-        @PathVariable Integer filmId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size, Authentication authentication) {
-    try {
+    public ResponseEntity<PageResponse<FilmFeedbackResponse>> getFeedbackForFilm(
+            @PathVariable Integer filmId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, Authentication authentication) {
         PageResponse<FilmFeedbackResponse> feedbackList = filmFeedbackService.getFeedbackForFilmContent(filmId, page, size);
         User user = (User) authentication.getPrincipal();
         feedbackList.getContent().forEach(feedback -> {
-            if(feedback.getUserId().equals(user.getId())){
+            if (feedback.getUserId().equals(user.getId())) {
                 feedback.setOwnFeedback(true);
             }
         });
 
         return ResponseEntity.ok(feedbackList);
-    } catch (Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error retrieving feedback: " + ex.getMessage());
     }
-}
 }

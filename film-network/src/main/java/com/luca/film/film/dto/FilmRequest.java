@@ -29,8 +29,8 @@ public record FilmRequest(
             // Optional: filmPoster may be null if not provided.
             String filmPoster,
 
-                @NotNull(message = "Year is required")
-                Year year,
+            @NotNull(message = "Year is required")
+            String year,
 
             // Indicates whether the film is archived.
             boolean archive,
