@@ -1,0 +1,46 @@
+.snackbar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  /* Set a wider fixed width or use max-width */
+  width: 350px;
+  background-color: rgba(50, 50, 50, 0.5); /* 80% opacity background */
+  color: #ededed;
+  padding: 0.8rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.snackbar-success {
+  background-color: rgba(76, 175, 80, 0.8) !important; /* Green with 80% opacity */
+}
+
+.snackbar-danger {
+  background-color: rgba(244, 67, 54, 0.8) !important; /* Red with 80% opacity */
+}
+
+.snackbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.snackbar-message {
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.snackbar-close {
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  /* Optional: adjust the color for the close icon */
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.snackbar-close:hover {
+  color: #ccc;
+}

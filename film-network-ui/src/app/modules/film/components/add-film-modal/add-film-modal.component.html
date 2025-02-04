@@ -1,0 +1,96 @@
+<!-- Modal Overlay: Clicking outside the modal content will close the modal -->
+<div class="modal-overlay" (click)="onClose()"></div>
+
+<!-- Modal Dialog: Stops click propagation so that clicks inside do not close the modal -->
+<div class="modal-dialog bg-secondary text-white rounded-3" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <!-- Modal Header with Title and Cross Icon -->
+    <div class="modal-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Add Film</h4>
+      <!-- Cross icon with danger color -->
+      <button type="button" class="btn btn-outline-secondary" style="color: #dc3545" aria-label="Close" (click)="onClose()">
+        <i class="fas fa-times text-danger fs-4"></i>
+      </button>
+    </div>
+
+    <!-- Instruction Text (Second Element) -->
+    <div class="modal-instruction pt-3 text-secondary">
+      <p>Please fill in the film details below</p>
+    </div>
+
+    <!-- Modal Body: Horizontal layout with left file upload area and right form fields -->
+    <div class="modal-body">
+      <form (ngSubmit)="onSubmit()" #filmForm="ngForm">
+        <div class="d-flex flex-row gap-3">
+          <!-- Left Column: File Upload Area (Fixed Size) -->
+          <div class="upload-area" (click)="fileInput.click()">
+            <!-- Hidden file input -->
+            <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/jpeg" required>
+            <!-- Display preview if available; otherwise show upload prompt -->
+            <ng-container *ngIf="selectedPage; else uploadPrompt">
+              <img [src]="selectedPage" alt="Film Poster Preview" class="img-fluid preview-image">
+            </ng-container>
+            <ng-template #uploadPrompt>
+              <div class="d-flex flex-column justify-content-center align-items-center h-100">
+                <i class="fas fa-upload fs-2"></i>
+                <p class="mb-0">Click here to upload Film Poster</p>
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Right Column: Other Form Fields (Flexible) -->
+          <div class="right-fields flex-fill">
+            <!-- Title -->
+            <div class="mb-3">
+              <input type="text" id="filmTitle" class="form-control"
+                     [(ngModel)]="film.title" name="title" placeholder="Title" required>
+            </div>
+            <!-- Director -->
+            <div class="mb-3">
+              <input type="text" id="filmDirector" class="form-control"
+                     [(ngModel)]="film.director" name="director" placeholder="Director" required>
+            </div>
+            <!-- IMDB ID -->
+            <div class="mb-3">
+              <input type="text" id="filmImdbId" class="form-control"
+                     [(ngModel)]="film.imdbId" name="imdbId" placeholder="IMDB ID" required>
+            </div>
+            <!-- Synopsis -->
+            <div class="mb-3">
+              <textarea id="filmSynopsis" class="form-control"
+                        [(ngModel)]="film.synopsis" name="synopsis" placeholder="Synopsis" rows="3" required></textarea>
+            </div>
+            <!-- Year (Dropdown) -->
+            <div class="mb-3">
+              <select id="filmYear" class="form-control"
+                      [(ngModel)]="film.year" name="year" required>
+                <option value="" disabled>Select Year</option>
+                <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+              </select>
+            </div>
+            <!-- Archive Switch
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="filmArchive"
+                     [(ngModel)]="film.archive" name="archive">
+              <label class="form-check-label" for="filmArchive">Archive</label>
+            </div>
+            -->
+
+            <!-- Genre (Dropdown) -->
+            <div class="mb-3">
+              <select id="filmGenre" class="form-control"
+                      [(ngModel)]="film.genre" name="genre" required>
+                <option value="" disabled>Select Genre</option>
+                <option *ngFor="let genre of availableGenres" [value]="genre">{{ genre }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- Modal Footer: Submit button aligned at bottom right -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="!filmForm.valid">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

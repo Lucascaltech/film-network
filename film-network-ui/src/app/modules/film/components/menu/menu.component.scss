@@ -1,0 +1,40 @@
+li > a {
+  &:hover{
+    background-color: #d6e5f1;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  &.active{
+    background-color: #e8e6e6;
+    border-radius: 5px;
+    color: #5f9adb;
+    text-decoration: none;
+  }
+}
+
+.search-button{
+  color: #5f9adb;
+  border-color: #5f9adb;
+  &:hover{
+    color: white;
+    background-color: #5f9adb;
+    border-color: white;
+  }
+}
+
+.search-field{
+  border-color: #5f9adb;
+  &:focus{
+    border-color: #5f9adb;
+  }
+}
+.logo{
+  margin-right: 10px;
+  color: #007bff;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+

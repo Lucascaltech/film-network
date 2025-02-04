@@ -1,0 +1,97 @@
+/* Overlay covering the entire viewport */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+/* Modal dialog styling: centered with increased width and max-height */
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: 600px; /* Increased width */
+  max-height: 80vh; /* Maximum height: 80% of viewport height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Modal content styling */
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Modal header styling */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Set the cross (close) button color to danger */
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #dc3545; /* Danger color */
+  cursor: pointer;
+}
+
+/* Modal instruction text styling */
+.modal-instruction {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  text-align: left;
+  font-size: 1rem;
+  color: #adb5bd; /* Secondary text color */
+}
+
+/* Modal body styling with vertical scrolling if needed */
+.modal-body {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  color: black; /* Ensure text is black */
+}
+
+/* Modal footer: Submit button aligned to bottom right */
+.modal-footer {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #dee2e6;
+  text-align: right;
+}
+
+/* File upload area styling (left column) */
+.upload-area {
+  min-width: 200px; /* Fixed width */
+  width: 300px;
+  height: auto; /* Fixed height */
+  border: 2px dashed #ccc;
+  cursor: pointer;
+  color: gray;
+  border-radius: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Image preview styling */
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}

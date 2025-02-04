@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand logo" title="Film Social Network" href="javascript:void(0)">FSN</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Navigation Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item me-3">
+          <a class="nav-link" aria-current="page" routerLink="/films">
+            <i class="fas fa-home"></i> Home
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a class="nav-link" aria-current="page" routerLink="/films/my-films">
+            <i class="fas fa-film"></i> My Films
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a class="nav-link" aria-current="page" routerLink="/my-waiting-list">
+            <i class="fas fa-heart"></i> My Waiting List
+          </a>
+        </li>
+        <li class="nav-item me-3">
+          <a class="nav-link" aria-current="page" routerLink="/returned-films">
+            <i class="fas fa-undo-alt"></i> Returned Films
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " aria-current="page" routerLink="/borrowed-films">
+            <i class="fas fa-share-square"></i> Borrowed Films
+          </a>
+        </li>
+      </ul>
+
+      <!-- Search Form and User Info -->
+      <form class="d-flex align-items-center gap-3" role="search">
+        <input class="form-control search-field" type="search" placeholder="Search Film" aria-label="Search">
+        <button class="btn btn-outline-success search-button" type="submit">
+          <i class="fas fa-search "></i>
+        </button>
+        <span class="text-dark-emphasis" >Welcome,</span>
+        <span class="text-capitalize fw-bold text-dark-emphasis">John</span>
+        <button class="btn btn-link text-danger" type="button" (click)="logout()" title="Logout">
+          <i class="fas fa-sign-out-alt"  ></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
