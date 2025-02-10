@@ -6,6 +6,7 @@ import { FilmResponse } from '../../../../services/models/film-response';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 import { FilmCardComponent } from '../../components/film-card/film-card.component';
 import {SnackbarComponent} from "../../../../common/components/snackbar/snackbar.component";
+import {ViewFilmModalComponent} from "../../components/film-info-modal/film-info-modal.component";
 
 @Component({
   selector: 'app-all-films',
@@ -15,7 +16,8 @@ import {SnackbarComponent} from "../../../../common/components/snackbar/snackbar
     FilmCardComponent,
     NgClass,
     NgIf,
-    SnackbarComponent
+    SnackbarComponent,
+    ViewFilmModalComponent,
   ],
   templateUrl: './all-films.component.html',
   styleUrls: ['./all-films.component.scss']  // Correct plural form
@@ -27,6 +29,8 @@ export class AllFilmsComponent implements OnInit {
   pageIndex: number = 0;
   message: string = '';
   level: 'success' | 'danger' = 'success';
+  showViewFilmModal: boolean =false;
+  selectedFilm: FilmResponse = {};
 
   constructor(
     private readonly filmService: FilmService,
@@ -88,5 +92,14 @@ export class AllFilmsComponent implements OnInit {
         this.level = 'danger';
       }
     });
+  }
+
+  onShowFilmDetails(film: FilmResponse): void {
+  this.selectedFilm = film;
+  this.showViewFilmModal = true;
+}
+
+  onViewFilmModalClose() {
+    this.showViewFilmModal = false;
   }
 }

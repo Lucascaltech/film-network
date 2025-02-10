@@ -139,7 +139,7 @@ public class AuthenticationService {
         claims.put("fullName", user.getFullName());
         String jwt = jwtService.generateToken(claims,user);
 
-        return AuthenticationResponse.builder().token(jwt).build();
+        return AuthenticationResponse.builder().token(jwt).id(user.getId()).build();
     }
 
 

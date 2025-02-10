@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {RegistrationRequest} from "../../services/models/registration-request";
 import {FormsModule} from "@angular/forms";
 import {Router, RouterLink} from "@angular/router";
 import {NgForOf, NgIf} from "@angular/common";
 import {AuthenticationService} from "../../services/services/authentication.service";
+import {LoaderComponent} from "../../common/components/loader/loader.component";
 
 @Component({
   selector: 'app-register',
@@ -12,7 +13,8 @@ import {AuthenticationService} from "../../services/services/authentication.serv
     FormsModule,
     RouterLink,
     NgForOf,
-    NgIf
+    NgIf,
+    LoaderComponent
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -26,14 +28,20 @@ export class RegisterComponent {
     lastName: ''
   };
   errorMsg: Array<string> = [];
+  isLoading: boolean = false;
 
   constructor(
-    private readonly  authService: AuthenticationService,
+    private readonly authService: AuthenticationService,
     private readonly router: Router
   ) {
   }
+
   register() {
+    this.isLoading = true;
     this.errorMsg = [];
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+    }
     console.log("Register Button is Clicked");
     this.authService.register({
       body: this.registerRequest
@@ -41,6 +49,7 @@ export class RegisterComponent {
       next: (response) => {
         console.log(response);
         this.router.navigate(['activate']);
+        this.isLoading = false;
       }, error: (error) => {
         console.log(error);
         if (error.error.validationErrors) {
@@ -48,6 +57,7 @@ export class RegisterComponent {
         } else {
           this.errorMsg.push(error.error.errorMessage);
         }
+        this.isLoading = false;
       }
     })
   }

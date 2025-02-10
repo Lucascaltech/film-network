@@ -1,0 +1,68 @@
+<!-- Modal Overlay: Clicking outside the modal content will close the modal -->
+<div class="modal-overlay" (click)="onClose()"></div>
+
+<!-- Modal Dialog: Stops click propagation so that clicks inside do not close the modal -->
+<div class="modal-dialog rounded-3" (click)="$event.stopPropagation()">
+  <div class="modal-content bg-secondary">
+    <!-- Modal Header with Title and Close Icon -->
+    <div class="modal-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+      <h3 class="modal-title fw-bold">Return Film</h3>
+      <button type="button" class="btn btn-outline-secondary" style="color: #dc3545" aria-label="Close"
+              (click)="onClose()">
+        <i class="fas fa-times text-danger fs-4"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body: Two-Column Layout -->
+    <div class="modal-body">
+      <div class="d-flex flex-row gap-2">
+        <!-- Left Section: Film Information -->
+        <div class="film-info-section flex-fill bg-white text-secondary rounded-3">
+          <h5 class="fw-bold">{{ film?.filmTitle }}</h5>
+          <p><strong>Director:</strong> {{ film?.director }}</p>
+          <p><strong>Imdb ID:</strong> {{ film?.imdbId }}</p>
+        </div>
+
+        <!-- Right Section: Feedback Form -->
+        <div class="feedback-form-section flex-fill rounded-3">
+          <h5 class="fw-bold">Feedback</h5>
+          <div class="mb-3">
+            <textarea
+              class="form-control"
+              rows="8"
+              [(ngModel)]="feedback"
+              name="feedback"
+              placeholder="Enter your feedback"
+              required>
+            </textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="fw-bold me-2">Rating:</label>
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+              <i
+                (click)="setRating(star)"
+                style="cursor: pointer;"
+                [ngClass]="{
+                  'fas': star <= rating,
+                  'far': star > rating,
+                  'fa-star': true,
+                  'text-warning': true
+                }">
+              </i>
+            </ng-container>
+          </div>
+
+          <div class="modal-footer d-flex gap-2">
+            <button type="button" class="btn btn-secondary bg-dark" [disabled]="!feedback.trim() || rating === 0" (click)="onSubmit()">
+              Feedback & Return
+            </button>
+            <button type="button" class="btn btn-primary" (click)="onReturnSubmit()">
+              Return
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

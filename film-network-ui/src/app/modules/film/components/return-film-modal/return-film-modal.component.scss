@@ -1,0 +1,46 @@
+/* Modal overlay styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+/* Modal dialog centering and sizing */
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1060;
+  width: 90%;
+  max-width: 800px;
+}
+
+/* Modal content styling */
+.modal-content {
+  padding: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Left and right section styling */
+.film-info-section,
+.feedback-form-section {
+  padding: 0.75rem;
+  border: white 1px solid;
+}
+
+/* Optional: Adjust spacing within the film information */
+.film-info-section p {
+  margin-bottom: 0.5rem;
+}
+
+/* Ensure the feedback textarea has proper spacing */
+.feedback-form-section .form-control {
+  resize: none;
+}

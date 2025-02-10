@@ -1,9 +1,9 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilmRequest } from '../../../../services/models/film-request';
-import {NgForOf, NgIf} from "@angular/common";
+import { NgForOf, NgIf } from "@angular/common";
+import {FilmResponse} from "../../../../services/models/film-response";
 
-// Define an interface for the event payload that includes both FilmRequest and the cover file.
 export interface FilmCreationEvent {
   film: FilmRequest;
   filmCoverFile: File | null;
@@ -16,39 +16,64 @@ export interface FilmCreationEvent {
   templateUrl: './add-film-modal.component.html',
   styleUrls: ['./add-film-modal.component.scss']
 })
-export class AddFilmModalComponent implements OnInit {
-  // Emits when the modal should be closed.
+export class AddFilmModalComponent implements OnInit, OnChanges {
+  /**
+   * Input property: if provided (edit mode), the modal pre-populates the form.
+   * When adding a new film, this will be null.
+   */
+  @Input() filmToEdit: FilmResponse | null = null;
+
   @Output() closeModal = new EventEmitter<void>();
-  // Emits the new film data and the film cover file.
   @Output() submitFilm = new EventEmitter<FilmCreationEvent>();
 
-  // Film model with default values.
-  // This should match your FilmRequest (except id) with filmPoster as an empty string.
+  // Local film model used for binding.
   film = {
     title: '',
     director: '',
     imdbId: '',
     synopsis: '',
-    year: '',      // as string, e.g., "2010"
+    year: '',
     archive: false,
     rating: 0,
     genre: '',
-    filmPoster: '' // This will remain empty since the file is handled separately.
+    filmPoster: ''
   };
 
-  // Holds the actual file object for the cover.
   posterFile: File | null = null;
-
-  // Arrays for dropdown values (if needed)
   availableYears: string[] = [];
   availableGenres: string[] = ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Thriller'];
   selectedPage: any;
 
   ngOnInit(): void {
-    // Generate years from 2000 to the current year for dropdown (optional)
+    // Populate availableYears (from 2000 to current year)
     const currentYear = new Date().getFullYear();
     for (let year = 2000; year <= currentYear; year++) {
       this.availableYears.push(year.toString());
+    }
+    if (this.filmToEdit) {
+      this.populateForm(this.filmToEdit);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filmToEdit']) {
+      if (changes['filmToEdit'].currentValue) {
+        this.populateForm(changes['filmToEdit'].currentValue);
+      }
+    }
+  }
+
+  private populateForm(filmData: FilmResponse): void {
+    this.film.title= filmData.title as string;
+    this.film.genre = filmData.genre as string;
+    this.film.director = filmData.director as string;
+    this.film.imdbId = filmData.imdbId as string;
+    this.film.synopsis = filmData.synopsis as string;
+    this.film.year = filmData.year as string;
+    this.film.archive = filmData.archive as boolean;
+
+    if (filmData.filmPoster){
+      this.selectedPage = 'data:image/jpeg;base64,' + filmData.filmPoster;
     }
   }
 
@@ -59,19 +84,16 @@ export class AddFilmModalComponent implements OnInit {
   onFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
       this.posterFile = event.target.files[0];
-      // Create an object URL for the selected file and assign it to selectedPage
       this.selectedPage = URL.createObjectURL(this.posterFile!);
     }
   }
 
   onSubmit(): void {
-    // Emit an object with two properties:
-    // 1. film: the FilmRequest (with filmPoster as empty string)
-    // 2. filmCoverFile: the actual file selected (or null)
     this.submitFilm.emit({
-      film: { ...this.film, filmPoster: '' },
+      film: { ...this.film, filmPoster: ''},
       filmCoverFile: this.posterFile
     });
+
     this.onClose();
   }
 }

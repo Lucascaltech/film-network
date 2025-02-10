@@ -1,15 +1,15 @@
-<div class="card position-relative hover-effect" style="width: 20rem; height: 25rem; cursor: pointer;">
+<div class="card position-relative hover-effect" style="width: 18rem; height: 25rem; cursor: pointer;">
   <!-- Film Poster with error event handling -->
   <img (click)="onShowDetails()" [src]="filmPoster" alt="Film Poster" class="card-img-top rounded" style="width: 100%; height: 100%;" (error)="filmPoster = ''">
 
   <!-- Overlay Action Buttons (Top Right) -->
-  <div style="position: absolute; top: 0; right: 0; padding: 0.5rem;" class="text-end">
+  <div style="position: absolute; top: 0; right: 0; padding: 0.5rem;" class="text-end" *ngIf="userId == film.addedBy">
     <i (click)="onEdit()" class="fas fa-edit fs-5 text-primary me-2 action-icon" title="Edit film"></i>
     <i (click)="onDelete()" class="fas fa-trash-alt fs-5 text-danger me-2 action-icon" title="Delete Film"></i>
   </div>
 
   <!-- Overlay Title and Rating (Bottom Left) -->
-  <div (click)="onShowDetails()" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 0.2rem;" class="text-start">
+  <div (click)="onShowDetails()" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 0.2rem;" class="text-start bg-dark bg-opacity-75 rounded-top-3">
     <h5 [ngClass]="{'text-secondary': !filmPoster, 'text-white': filmPoster}"
         class="fw-bold m-0 p-2" style="word-break: break-word;">
       {{ film.title }}
@@ -28,10 +28,10 @@
         </ng-container>
       </div>
       <!-- Action Icons -->
-      <div>
-        <i (click)="onFavorite()" class="fas fa-heart text-white fs-6 text-danger action-icon" title="Add to Watch list"></i>
-        <i (click)="onShowDetails()" class="fas fa-circle-info text-white fs-6 text-danger action-icon" title="See more information about the film"></i>
-        <i (click)="onBorrow()" class="fas fa-share-square text-white fs-6 text-danger action-icon" title="Borrow the film"></i>
+      <div *ngIf="!manage">
+        <i (click)="onFavorite(); $event.stopPropagation()" class="fas fa-heart text-white fs-6 text-danger action-icon" title="Add to Watch list"></i>
+        <i (click)="onShowDetails(); $event.stopPropagation()" class="fas fa-circle-info text-white fs-6 text-danger action-icon" title="See more information about the film"></i>
+        <i (click)="onBorrow(); $event.stopPropagation()" class="fas fa-share-square text-white fs-6 text-danger action-icon" title="Borrow the film"></i>
       </div>
     </div>
   </div>

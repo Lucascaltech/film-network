@@ -1,12 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {FilmCardComponent} from "../../components/film-card/film-card.component";
-import {NgClass, NgForOf, NgIf} from "@angular/common";
-import {SnackbarComponent} from "../../../../common/components/snackbar/snackbar.component";
-import {PageResponseFilmResponse} from "../../../../services/models/page-response-film-response";
-import {FilmService} from "../../../../services/services/film.service";
-import {Router} from "@angular/router";
-import {FilmResponse} from "../../../../services/models/film-response";
-import {AddFilmModalComponent, FilmCreationEvent} from "../../components/add-film-modal/add-film-modal.component";
+import { Component, OnInit } from '@angular/core';
+import { FilmCardComponent } from "../../components/film-card/film-card.component";
+import { NgClass, NgForOf, NgIf } from "@angular/common";
+import { SnackbarComponent } from "../../../../common/components/snackbar/snackbar.component";
+import { PageResponseFilmResponse } from "../../../../services/models/page-response-film-response";
+import { FilmService } from "../../../../services/services/film.service";
+import { Router } from "@angular/router";
+import { FilmResponse } from "../../../../services/models/film-response";
+import { AddFilmModalComponent, FilmCreationEvent } from "../../components/add-film-modal/add-film-modal.component";
+import {ViewFilmModalComponent} from "../../components/film-info-modal/film-info-modal.component";
 
 @Component({
   selector: 'app-my-films',
@@ -17,13 +18,14 @@ import {AddFilmModalComponent, FilmCreationEvent} from "../../components/add-fil
     NgIf,
     SnackbarComponent,
     NgClass,
-    AddFilmModalComponent
+    AddFilmModalComponent,
+    ViewFilmModalComponent
   ],
   templateUrl: './my-films.component.html',
-  styleUrl: './my-films.component.scss'
+  styleUrls: ['./my-films.component.scss']
 })
-export class MyFilmsComponent implements OnInit{
-page: number = 0;
+export class MyFilmsComponent implements OnInit {
+  page: number = 0;
   size: number = 10;
   filmResponse: PageResponseFilmResponse = {};
   pageIndex: number = 0;
@@ -31,6 +33,10 @@ page: number = 0;
   level: 'success' | 'danger' = 'success';
   // Flag to control modal visibility
   showAddFilmModal: boolean = false;
+  // Variable to hold the film to edit (if any)
+  editingFilm: FilmResponse | null = null;
+  protected selectedFilm: FilmResponse = {};
+  protected showViewFilmModal: boolean =false;
 
   constructor(
     private readonly filmService: FilmService,
@@ -78,17 +84,36 @@ page: number = 0;
     this.findAllFilms();
   }
 
-
-  onEditFilm(film: FilmResponse) {
-    console.log("On Edit Button is clicked")
+  onEditFilm(film: FilmResponse): void {
+    console.log("On Edit Button is clicked");
+    this.editingFilm = film;
+    this.showAddFilmModal = true;
+    console.log("The film at onEdit is : ", film)
   }
 
-  onDeleteFilm(film: FilmResponse) {
-    console.log("On Delete Button is clicked")
+  onDeleteFilm(film: FilmResponse): void {
+    console.log("On Delete Button is clicked the deleted film is :", film);
+    this.filmService.deleteFilm(
+      {id:film.id as number}
+    ).subscribe({
+      next: (response) => {
+        console.log("Film Deleted Successfully");
+        this.message = 'Film Deleted Successfully';
+        this.level = 'success';
+        this.findAllFilms();
+      },
+      error: (error) => {
+        console.log(error);
+        this.message = error.error.errorMessage;
+        this.level = 'danger';
+      }
+    })
+
   }
 
   // Called when the "Add Film" button is clicked.
   onAddFilm(): void {
+    this.editingFilm = null;
     this.showAddFilmModal = true;
   }
 
@@ -97,10 +122,50 @@ page: number = 0;
     this.showAddFilmModal = false;
   }
 
-  onFilmSubmit(filmData: FilmCreationEvent) {
-      console.log("On Film Submit is clicked", filmData)
+  onFilmSubmit(filmData: FilmCreationEvent): void {
+    if (this.editingFilm) {
+      console.log("This is the film", this.editingFilm)
+      this.filmService.updateFilm({
+          id:this.editingFilm.id as number,
+          body: filmData.film
+        }).subscribe({
+          next: (response) => {
+            console.log("Film Updated Successfully");
+            this.message = 'Film Updated Successfully';
+            this.level = 'success';
+
+            console.log(filmData)
+            if (filmData.filmCoverFile !== null) {
+              this.filmService.uploadPoster({
+                filmId: this.editingFilm!.id as number,
+                body: { file: filmData.filmCoverFile }
+              }).subscribe({
+                next: (res) => {
+                  console.log("Poster Updated Successfully");
+                  this.message = 'Poster Updated Successfully';
+                  this.finishFilmModal();
+                },
+                error: (error) => {
+                  console.log(error);
+                  this.message = error.error.errorMessage;
+                  this.level = 'danger';
+                }
+              });
+            } else {
+              this.finishFilmModal();
+            }
+          },
+          error: (error) => {
+            console.log(error);
+            this.message = error.error.errorMessage;
+            this.level = 'danger';
+          }
+      })
+
+    } else {
+      // Create mode: use existing create logic (do not change film create logic)
       this.filmService.createFilm({
-        body:filmData.film,
+        body: filmData.film,
       }).subscribe({
         next: (response) => {
           console.log("Film Created Successfully");
@@ -108,28 +173,41 @@ page: number = 0;
           this.level = 'success';
           this.filmService.uploadPoster({
             filmId: response,
-            body: {file:filmData.filmCoverFile!}
+            body: { file: filmData.filmCoverFile! }
           }).subscribe({
-            next: (response) => {
+            next: (res) => {
               console.log("Poster Uploaded Successfully");
               this.message = 'Poster Uploaded Successfully';
-              this.level = 'success';
-              this.showAddFilmModal = false;
-              this.findAllFilms();
+              this.finishFilmModal();
             },
             error: (error) => {
               console.log(error);
               this.message = error.error.errorMessage;
               this.level = 'danger';
             }
-          })
+          });
         },
         error: (error) => {
           console.log(error);
           this.message = error.error.errorMessage;
           this.level = 'danger';
         }
-      })
+      });
+    }
   }
+
+  private finishFilmModal(): void {
+    this.showAddFilmModal = false;
+    this.editingFilm = null;
+    this.findAllFilms();
+  }
+
+  onShowFilmDetails(film: FilmResponse): void {
+  this.selectedFilm = film;
+  this.showViewFilmModal = true;
 }
 
+  onViewFilmModalClose() {
+    this.showViewFilmModal = false;
+  }
+}

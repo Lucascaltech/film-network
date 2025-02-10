@@ -97,4 +97,5 @@ public class FilmRentalHistoryService {
                 .orElseThrow(() -> new RuntimeException("Rental history not found with id: " + id));
         filmRentalHistoryRepository.delete(existing);
     }
+
 }

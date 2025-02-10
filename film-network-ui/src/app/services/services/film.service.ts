@@ -22,10 +22,12 @@ import { getAllFilms } from '../fn/film/get-all-films';
 import { GetAllFilms$Params } from '../fn/film/get-all-films';
 import { getAllFilmsYouOwn } from '../fn/film/get-all-films-you-own';
 import { GetAllFilmsYouOwn$Params } from '../fn/film/get-all-films-you-own';
-import { getAllRentedFilms } from '../fn/film/get-all-rented-films';
-import { GetAllRentedFilms$Params } from '../fn/film/get-all-rented-films';
+import { getBorrowedFilms } from '../fn/film/get-borrowed-films';
+import { GetBorrowedFilms$Params } from '../fn/film/get-borrowed-films';
 import { getFilmById } from '../fn/film/get-film-by-id';
 import { GetFilmById$Params } from '../fn/film/get-film-by-id';
+import { getReturnedFilmsForOwner } from '../fn/film/get-returned-films-for-owner';
+import { GetReturnedFilmsForOwner$Params } from '../fn/film/get-returned-films-for-owner';
 import { PageResponseFilmResponse } from '../models/page-response-film-response';
 import { PageResponseRentedFilmResponse } from '../models/page-response-rented-film-response';
 import { rentFilm } from '../fn/film/rent-film';
@@ -303,27 +305,52 @@ export class FilmService extends BaseService {
     );
   }
 
-  /** Path part for operation `getAllRentedFilms()` */
-  static readonly GetAllRentedFilmsPath = '/films/user/rented';
+  /** Path part for operation `getBorrowedFilms()` */
+  static readonly GetBorrowedFilmsPath = '/films/user/borrowed';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getAllRentedFilms()` instead.
+   * To access only the response body, use `getBorrowedFilms()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getAllRentedFilms$Response(params: GetAllRentedFilms$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseRentedFilmResponse>> {
-    return getAllRentedFilms(this.http, this.rootUrl, params, context);
+  getBorrowedFilms$Response(params?: GetBorrowedFilms$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseRentedFilmResponse>> {
+    return getBorrowedFilms(this.http, this.rootUrl, params, context);
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getAllRentedFilms$Response()` instead.
+   * To access the full response (for headers, for example), `getBorrowedFilms$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getAllRentedFilms(params: GetAllRentedFilms$Params, context?: HttpContext): Observable<PageResponseRentedFilmResponse> {
-    return this.getAllRentedFilms$Response(params, context).pipe(
+  getBorrowedFilms(params?: GetBorrowedFilms$Params, context?: HttpContext): Observable<PageResponseRentedFilmResponse> {
+    return this.getBorrowedFilms$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseRentedFilmResponse>): PageResponseRentedFilmResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `getReturnedFilmsForOwner()` */
+  static readonly GetReturnedFilmsForOwnerPath = '/films/owner/returned';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getReturnedFilmsForOwner()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getReturnedFilmsForOwner$Response(params?: GetReturnedFilmsForOwner$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseRentedFilmResponse>> {
+    return getReturnedFilmsForOwner(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getReturnedFilmsForOwner$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getReturnedFilmsForOwner(params?: GetReturnedFilmsForOwner$Params, context?: HttpContext): Observable<PageResponseRentedFilmResponse> {
+    return this.getReturnedFilmsForOwner$Response(params, context).pipe(
       map((r: StrictHttpResponse<PageResponseRentedFilmResponse>): PageResponseRentedFilmResponse => r.body)
     );
   }

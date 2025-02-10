@@ -8,18 +8,20 @@ import { AppRoutingModule } from './app.routes';
 import {LoginComponent} from "./pages/login/login.component";
 import {FormsModule} from "@angular/forms";
 import {HttpInterceptorInterceptor} from "./services/interceptor/http-interceptor.interceptor";
+import {LoaderComponent} from "./common/components/loader/loader.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        LoaderComponent
+    ],
   providers: [
     HttpClient,
     {

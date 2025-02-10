@@ -25,6 +25,7 @@ public class FilmResponse {
     private boolean archive;
     private Double rating;
     private Genre genre;
+    private Integer addedBy;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 }

@@ -3,16 +3,21 @@
   <hr>
 
   <!-- Film Cards Display -->
-  <div class="d-flex justify-content-start gap-2 flex-wrap">
+  <div class="d-flex justify-content-center gap-3 flex-wrap">
     <app-film-card
       [film]="film"
       *ngFor="let film of filmResponse.content"
-      (borrow)="borrowFilm($event)">
+      (borrow)="borrowFilm($event)"
+      (details)="onShowFilmDetails($event)"
+    >
     </app-film-card>
   </div>
 
+  <div *ngIf="filmResponse.content?.length ===0" class="text-center fw-bold" >
+        <i class="fa fa-exclamation-triangle"  aria-hidden="true"> </i>&nbsp; No film found
+    </div>
   <!-- Pagination Section -->
-  <div class="d-flex justify-content-center gap-2 mt-3">
+  <div class="d-flex justify-content-center gap-2 mt-3" *ngIf="filmResponse.content?.length !==0">
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center p-3">
         <li class="page-item" [ngClass]="{'disabled': filmResponse.first}">
@@ -44,6 +49,13 @@
     </nav>
   </div>
 </div>
+
+<app-film-info-modal
+  *ngIf="showViewFilmModal"
+  [film]="selectedFilm"
+  (closeModal)="onViewFilmModalClose()">
+</app-film-info-modal>
+
 
 <!-- Snackbar for displaying messages -->
 <app-snackbar [message]="message" [level]="level" *ngIf="message"></app-snackbar>

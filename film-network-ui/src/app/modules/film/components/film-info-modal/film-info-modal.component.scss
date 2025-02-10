@@ -1,0 +1,46 @@
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+/* Modal dialog centering and sizing */
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1060;
+  width: 90%;
+  max-width: 800px;
+}
+
+/* Modal content styling */
+.modal-content {
+  padding: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Poster and info section styling */
+.poster-section {
+  padding: 1rem;
+  text-align: center;
+}
+
+.info-section {
+  padding: 1rem;
+}
+
+/* Ensure images do not overflow their container */
+.poster-section img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}

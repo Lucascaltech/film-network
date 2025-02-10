@@ -10,16 +10,14 @@ import { RequestBuilder } from '../../request-builder';
 
 import { PageResponseRentedFilmResponse } from '../../models/page-response-rented-film-response';
 
-export interface GetAllRentedFilms$Params {
-  rented: boolean;
+export interface GetReturnedFilmsForOwner$Params {
   page?: number;
   size?: number;
 }
 
-export function getAllRentedFilms(http: HttpClient, rootUrl: string, params: GetAllRentedFilms$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseRentedFilmResponse>> {
-  const rb = new RequestBuilder(rootUrl, getAllRentedFilms.PATH, 'get');
+export function getReturnedFilmsForOwner(http: HttpClient, rootUrl: string, params?: GetReturnedFilmsForOwner$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseRentedFilmResponse>> {
+  const rb = new RequestBuilder(rootUrl, getReturnedFilmsForOwner.PATH, 'get');
   if (params) {
-    rb.query('rented', params.rented, {});
     rb.query('page', params.page, {});
     rb.query('size', params.size, {});
   }
@@ -34,4 +32,4 @@ export function getAllRentedFilms(http: HttpClient, rootUrl: string, params: Get
   );
 }
 
-getAllRentedFilms.PATH = '/films/user/rented';
+getReturnedFilmsForOwner.PATH = '/films/owner/returned';

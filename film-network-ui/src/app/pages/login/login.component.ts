@@ -12,6 +12,7 @@ import {TokenService} from "../../services/token/token.service";
 export class LoginComponent {
   authRequest: AuthenticateRequest = {email: '', password: ''};
   errorMsg: Array<string> =[];
+  isLoading: boolean = false;
 
   constructor(
     private readonly router: Router,
@@ -23,14 +24,18 @@ export class LoginComponent {
 
   login() {
     this.errorMsg= []
-    console.log("Login Button is Clicked");
+    this.isLoading =true
+
     this.authService.authenticate({
       body: this.authRequest
     }).subscribe({
       next: (response) => {
         console.log(response);
         this.tokenService.token = response.token as string;
+        this.tokenService.userId = response.id as unknown as string;
+        this.isLoading=false;
         this.router.navigate(['films']);
+
       }, error: (error) => {
         console.log(error);
        if (error.error.validationErrors){
@@ -38,6 +43,8 @@ export class LoginComponent {
        }else {
          this.errorMsg.push(error.error.errorMessage);
       }
+
+       this.isLoading=false;
     }});
   }
 

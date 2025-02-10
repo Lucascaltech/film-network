@@ -1,0 +1,37 @@
+/* Make the scrollable container have a fixed max-height and vertical scrollbar */
+.scrollable-table {
+  overflow-y: auto;
+}
+
+/* Ensure the table is fully rounded */
+.custom-rounded-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.5rem; // Adjust the radius as needed
+  overflow: hidden; // Ensure rounded corners are visible
+}
+
+/* Add extra spacing and a top border to the footer row */
+table tfoot tr .footer-cell {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-right: 2rem;
+  border-top: 1px  #ccc; // Light border to separate from tbody
+  text-align: end;
+}
+
+/* Optional: Center table text and adjust padding */
+table th, table td {
+  vertical-align: middle;
+  padding: 0.75rem;
+}
+
+/* Table row styling for hover and clickable effect */
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #5f9adb; // Change to desired hover color (adjust to match your theme)
+  }
+}

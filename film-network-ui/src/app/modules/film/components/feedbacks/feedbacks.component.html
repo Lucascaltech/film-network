@@ -1,0 +1,31 @@
+<div class="feedback-container">
+  <h5 class="fw-bold">Feedbacks</h5>
+
+  <!-- Loading indicator -->
+  <div *ngIf="isLoading" class="text-center">
+    Loading feedbacks...
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="text-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- No feedback available -->
+  <div *ngIf="!isLoading && !errorMessage && feedbacks.content?.length! === 0">
+    No feedback available.
+  </div>
+
+  <!-- Display feedback list -->
+  <ul *ngIf="!isLoading && feedbacks.content?.length! > 0" class="list-unstyled">
+    <li *ngFor="let feedback of feedbacks.content" class="feedback-item mb-3 p-2 bg-dark rounded">
+      <p class="mb-1">
+        <small class="text-primary">
+          ({{ feedback.createdAt | date:'short' }})
+        </small>
+      </p>
+      <p class="mb-1"><strong>Feedback: </strong> {{ feedback.review }}</p>
+      <p class="mb-0"><strong>Rating: </strong> {{ feedback.rating }}/5</p>
+    </li>
+  </ul>
+</div>

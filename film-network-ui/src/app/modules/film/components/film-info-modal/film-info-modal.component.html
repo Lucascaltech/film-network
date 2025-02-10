@@ -1,0 +1,48 @@
+<!-- Modal Overlay: Clicking outside the modal content will close the modal -->
+<div class="modal-overlay" (click)="onClose()"></div>
+
+<!-- Modal Dialog: Stops click propagation so that clicks inside do not close the modal -->
+<div class="modal-dialog bg-secondary text-white rounded-3" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <!-- Modal Header with Title and Close Icon -->
+    <div class="modal-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+      <h3 class="modal-title fw-bold">View Film</h3>
+      <button type="button" class="btn btn-outline-secondary" style="color: #dc3545" aria-label="Close"
+              (click)="onClose()">
+        <i class="fas fa-times text-danger fs-4"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body: Two-Column Layout -->
+    <div class="modal-body">
+      <div class="d-flex flex-row gap-2">
+        <!-- Left Section: Film Poster -->
+        <div class="poster-section flex-fill">
+          <img [src]="filmPosterUrl" alt="Film Poster" class="img-fluid rounded-3" />
+        </div>
+
+        <!-- Right Section: Film Information -->
+        <div class="info-section flex-fill">
+          <h5 class="fw-bold">{{ film?.title }}</h5>
+          <p><strong>Director:</strong> {{ film?.director }}</p>
+          <p><strong>IMDB ID:</strong> {{ film?.imdbId }}</p>
+          <p><strong>Year:</strong> {{ film?.year }}</p>
+          <p><strong>Genre:</strong> {{ film?.genre }}</p>
+          <p class="mb-0"><strong>Synopsis:</strong></p>
+          <p>{{ film?.synopsis }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Section -->
+      <div class="feedback-section mt-3">
+        <!-- Include the FeedbackComponent -->
+       <app-feedbacks [film]="film!" ></app-feedbacks>
+      </div>
+
+    <!-- Modal Footer: Close Button -->
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>

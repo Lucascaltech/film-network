@@ -34,16 +34,19 @@
         required>
     </div>
 
-    <!-- Login Button -->
     <div class="d-flex justify-content-sm-between mb-3">
-      <button class="btn btn-primary fw-bold"  type="submit">
-        <em class="fas fa-sign-in-alt "></em>&nbsp;Login
+      <button class="btn btn-primary fw-bold" type="submit" [disabled]="isLoading">
+        <ng-container *ngIf="!isLoading; else loadingTemplate">
+          <em class="fas fa-sign-in-alt"></em>&nbsp;Login
+        </ng-container>
+        <ng-template #loadingTemplate>
+          <app-loader></app-loader>&nbsp;<!-- The loader is circular -->
+        </ng-template>
       </button>
       <div class="d-flex align-items-center justify-content-around">
-        <!-- Link to Register -->
-    Don't have an account?
-    <button (click)="register()" class="btn btn-link  text-white pb-2" type="button">Register</button>
-  </div>
+        Don't have an account?
+        <button (click)="register()" class="btn btn-link text-white pb-2" type="button">Register</button>
+      </div>
     </div>
 
 

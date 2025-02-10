@@ -63,7 +63,7 @@ public class FilmRentalHistoryMapper {
     public RentedFilmResponse toRentedFilmResponse(FilmRentalHistory history) {
         Film film = history.getFilm();
         return RentedFilmResponse.builder()
-                .id(history.getId())
+                .id(history.getFilm().getId())
                 .filmTitle(film != null ? film.getTitle() : null)
                 .director(film != null ? film.getDirector() : null)
                 // If imdbId is stored as a String in Film, change the type of imdbId in the DTO accordingly.

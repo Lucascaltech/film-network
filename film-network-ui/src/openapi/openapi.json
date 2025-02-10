@@ -752,21 +752,55 @@
         }
       }
     },
-    "/films/user/rented": {
+    "/films/user/borrowed": {
       "get": {
         "tags": [
           "Film"
         ],
-        "operationId": "getAllRentedFilms",
+        "operationId": "getBorrowedFilms",
         "parameters": [
           {
-            "name": "rented",
+            "name": "page",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "boolean"
+              "type": "integer",
+              "format": "int32",
+              "default": 0
             }
           },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseRentedFilmResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/films/owner/returned": {
+      "get": {
+        "tags": [
+          "Film"
+        ],
+        "operationId": "getReturnedFilmsForOwner",
+        "parameters": [
           {
             "name": "page",
             "in": "query",
@@ -1003,13 +1037,30 @@
             "type": "string",
             "enum": [
               "ACTION",
+              "ADVENTURE",
+              "ANIMATION",
+              "BIOGRAPHY",
               "COMEDY",
-              "DRAMA",
-              "HORROR",
-              "SCI_FI",
+              "CRIME",
               "DOCUMENTARY",
-              "ANIMATION"
+              "DRAMA",
+              "FAMILY",
+              "FANTASY",
+              "HISTORY",
+              "HORROR",
+              "MUSICAL",
+              "MYSTERY",
+              "ROMANCE",
+              "SCI_FI",
+              "SPORT",
+              "THRILLER",
+              "WAR",
+              "WESTERN"
             ]
+          },
+          "addedBy": {
+            "type": "integer",
+            "format": "int32"
           },
           "createdAt": {
             "type": "string",
@@ -1197,6 +1248,10 @@
         "properties": {
           "token": {
             "type": "string"
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

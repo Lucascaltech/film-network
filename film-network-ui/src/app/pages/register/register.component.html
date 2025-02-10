@@ -63,8 +63,13 @@
 
     <!-- Register Button -->
     <div class="d-flex justify-content-sm-between mb-3 fw-bold">
-      <button type="submit" class="btn btn-success">
-        Register
+      <button type="submit" class="btn btn-success" [disabled]="isLoading">
+        <ng-container *ngIf="!isLoading; else loadingTemplate" >
+       Register
+        </ng-container>
+        <ng-template #loadingTemplate>
+          <app-loader></app-loader> &nbsp;
+        </ng-template>
       </button>
       <!-- Optional: Link to Login Page -->
       <div class="text-center d-flex align-items-center justify-content-around">

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {TokenService} from "../../../../services/token/token.service";
 
 @Component({
   selector: 'app-menu',
@@ -11,6 +12,13 @@ import {RouterLink} from "@angular/router";
   styleUrl: './menu.component.scss'
 })
 export class MenuComponent implements OnInit{
+  constructor(
+    private  readonly tokenService: TokenService,
+    private readonly router: Router
+  ) {
+  }
+
+  // user: UserResponse = {}
   ngOnInit(): void {
       const linkColor = document.querySelectorAll('.nav-link');
       linkColor.forEach(link => {
@@ -22,9 +30,19 @@ export class MenuComponent implements OnInit{
           link.classList.add('active');
         });
       });
+
+      // getUserInfo();
+
+  }
+
+  getUserInfo():void{
+
   }
 
   logout() {
     console.log("Logout button is clicked!")
+    this.tokenService.logoutUser();
+    this.router.navigate(['login'])
+
   }
 }
