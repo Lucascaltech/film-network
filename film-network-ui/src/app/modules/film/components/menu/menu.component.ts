@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {TokenService} from "../../../../services/token/token.service";
+import {KeycloakService} from "../../../../services/keycloak/keycloak.service";
+import {async} from "rxjs";
 
 @Component({
   selector: 'app-menu',
@@ -14,7 +16,8 @@ import {TokenService} from "../../../../services/token/token.service";
 export class MenuComponent implements OnInit{
   constructor(
     private  readonly tokenService: TokenService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly keyCloakService: KeycloakService
   ) {
   }
 
@@ -39,10 +42,7 @@ export class MenuComponent implements OnInit{
 
   }
 
-  logout() {
-    console.log("Logout button is clicked!")
-    this.tokenService.logoutUser();
-    this.router.navigate(['login'])
-
+  async logout() {
+   this.keyCloakService.logout();
   }
 }

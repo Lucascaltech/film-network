@@ -39,10 +39,7 @@ export class RegisterComponent {
   register() {
     this.isLoading = true;
     this.errorMsg = [];
-    if (localStorage.getItem('token')) {
-      localStorage.removeItem('token');
-    }
-    console.log("Register Button is Clicked");
+
     this.authService.register({
       body: this.registerRequest
     }).subscribe({

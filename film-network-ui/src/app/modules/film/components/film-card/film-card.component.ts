@@ -1,6 +1,7 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FilmResponse} from "../../../../services/models/film-response";
 import {NgClass, NgForOf, NgIf} from "@angular/common";
+import {KeycloakService} from "../../../../services/keycloak/keycloak.service";
 
 @Component({
   selector: 'app-film-card',
@@ -14,15 +15,21 @@ import {NgClass, NgForOf, NgIf} from "@angular/common";
   styleUrl: './film-ca' +
     'rd.component.scss'
 })
-export class FilmCardComponent{
-
-  private _film: FilmResponse = {};
+export class FilmCardComponent implements OnInit {
+  private _film: FilmResponse = {} as FilmResponse;
   private _filmPoster: string = '';
-  private _manage = false;
-  private _userId: string = localStorage.getItem('userId') as string;
+  private _manage: boolean = false;
+  private _userId: string = '';
 
-  get userId(): number {
-    return this._userId as unknown as number;
+  constructor(private readonly keyCloakService: KeycloakService) {}
+
+  async ngOnInit() {
+    this._userId = this.keyCloakService.keycloak.subject!;
+    console.log("User ID:", this._userId);
+  }
+
+  get userId(): string {
+    return this._userId;
   }
   get manage(): boolean {
     return this._manage;

@@ -28,12 +28,16 @@ spring:
         timeout: 3000
         writetimeout: 5000
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:9090/realms/my-realm"
 application:
   security:
     jwt:
       secret-key: abf7a0936393bf1f6143137367ccbdf3985d6379ce772634f5eff2131880604b
       expiration: 86400000
-
   mailing:
     frontend:
       activation-url: http://localhost:4200/activate-account

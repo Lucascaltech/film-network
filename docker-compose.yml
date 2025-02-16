@@ -24,7 +24,18 @@ services:
       - "1025:1025"  # SMTP port
     networks:
       - spring-demo
-
+  keycloak:
+    container_name: keycloak-fsn
+    image: quay.io/keycloak/keycloak:26.1.1
+    ports:
+      - 9090:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - spring-demo
+    command:
+      - "start-dev"
 networks:
   spring-demo:
     driver: bridge

@@ -8,8 +8,6 @@ import com.luca.film.film.FilmRentalHistory;
 import com.luca.film.film.FilmRentalHistoryRepository;
 import com.luca.film.film.FilmRepository;
 import com.luca.film.film.exceptions.OperationNotPermittedException;
-import com.luca.film.user.User;
-import com.luca.film.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +30,7 @@ public class FilmFeedbackService {
     private final FilmFeedbackRepository filmFeedbackRepository;
     private final FilmFeedbackMapper filmFeedbackMapper;
     private final FilmRepository filmRepository;
-    private final UserRepository userRepository;
+//    private final UserRepository userRepository;
     private final FilmRentalHistoryRepository filmRentalHistoryRepository;
 
     /**
@@ -50,17 +48,17 @@ public class FilmFeedbackService {
         if (film.isArchive()){
             throw new OperationNotPermittedException("you can not give feedback to archived film");
         }
-        User user = (User) authentication.getPrincipal();
-        if(Objects.equals(film.getAddedBy(), user)){
+//        User user = (User) authentication.getPrincipal();
+        if(Objects.equals(film.getCreatedBy(), authentication.getName())){
             throw  new OperationNotPermittedException("You can give feedback to your own film");
         }
-        FilmRentalHistory rentalRecord = filmRentalHistoryRepository.findByFilmAndUserAndReturnedAndReturnedApproved(
-                film, user, false, false
+        FilmRentalHistory rentalRecord = filmRentalHistoryRepository.findByFilmAndCreatedByAndReturnedAndReturnedApproved(
+                film, authentication.getName(), false, false
         ).orElseThrow(() -> new OperationNotPermittedException("No active rental found for this film."));
 
         rentalRecord.setReturned(true);
         // Map and save the feedback
-        FilmFeedback feedback = filmFeedbackMapper.toFilmFeedback(request, film, user);
+        FilmFeedback feedback = filmFeedbackMapper.toFilmFeedback(request, film, authentication.getName());
         FilmFeedback saved = filmFeedbackRepository.save(feedback);
         filmRentalHistoryRepository.save(rentalRecord);
         return filmFeedbackMapper.toFilmFeedbackResponse(saved);

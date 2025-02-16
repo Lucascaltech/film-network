@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHistory, Integer> {
 
     @Query("SELECT f FROM FilmRentalHistory f " +
-           "WHERE f.user = :user " +
+           "WHERE f.userId = :user " +
            "AND (f.returned = :returned OR f.returnedApproved = :returnedApproved)")
     Page<FilmRentalHistory> findAllByUserAndReturnedOrReturnedApproved(
             @Param("user") User user,
@@ -26,21 +26,21 @@ public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHis
         SELECT 
             (COUNT(*) > 0) AS isRented
         FROM FilmRentalHistory filmRentalHistory
-        WHERE filmRentalHistory.user.id = :userId
+        WHERE filmRentalHistory.userId = :userId
           AND filmRentalHistory.film.id = :filmId
         """)
-    boolean isAlreadyRentedByUser(Integer filmId, Integer userId);
+    boolean isAlreadyRentedByUser(Integer filmId, String userId);
 
-    Optional<FilmRentalHistory> findByFilmAndUserAndReturnedAndReturnedApproved(
-            Film film, User user, boolean returned, boolean returnedApproved);
+    Optional<FilmRentalHistory> findByFilmAndCreatedByAndReturnedAndReturnedApproved(
+            Film film, String userId, boolean returned, boolean returnedApproved);
 
-    Optional<FilmRentalHistory> findAllByFilm_AddedBy(User filmAddedBy);
+    Optional<FilmRentalHistory> findAllByFilm_CreatedBy(String filmAddedBy);
 
     // NEW METHOD: Retrieve all rental records where the borrower is the given user.
-    Page<FilmRentalHistory> findAllByUser(User user, Pageable pageable);
+    Page<FilmRentalHistory> findAllByCreatedBy(String user, Pageable pageable);
 
     // NEW METHOD: Retrieve all rental records for films uploaded by the given owner (by ID) that have been returned.
-    Page<FilmRentalHistory> findAllByFilm_AddedBy_IdAndReturnedTrue(Integer ownerId, Pageable pageable);
+    Page<FilmRentalHistory> findAllByFilm_CreatedByAndReturnedTrue(String ownerId, Pageable pageable);
 
     // NEW METHOD for approval:
     // Finds the rental record for a film that has been returned (returned == true)

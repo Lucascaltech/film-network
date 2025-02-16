@@ -20,12 +20,12 @@ public class FilmFeedbackMapper {
      * @param user    the User entity who provided the feedback
      * @return the FilmFeedback entity
      */
-    public com.luca.film.feedback.FilmFeedback toFilmFeedback(FilmFeedbackRequest request, Film film, User user) {
+    public com.luca.film.feedback.FilmFeedback toFilmFeedback(FilmFeedbackRequest request, Film film, String user) {
         return com.luca.film.feedback.FilmFeedback.builder()
                 .rating(request.rating())
                 .review(request.review())
                 .film(film)
-                .user(user)
+                .userid(user)
                 .build();
     }
 
@@ -41,7 +41,7 @@ public class FilmFeedbackMapper {
                 .rating(feedback.getRating())
                 .review(feedback.getReview())
                 .filmId(feedback.getFilm() != null ? feedback.getFilm().getId() : null)
-                .userId(feedback.getUser() != null ? feedback.getUser().getId() : null)
+                .userId(feedback.getUserid() != null ? feedback.getUserid() : null)
                 .createdAt(feedback.getCreatedAt())
                 .lastModifiedAt(feedback.getLastModifiedAt())
                 .build();

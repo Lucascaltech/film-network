@@ -15,9 +15,9 @@
         <tr>
           <th scope="col">SR</th>
           <th scope="col">Title</th>
-          <th scope="col">IMDBID</th>
+          <th scope="col">Imdb ID</th>
           <th scope="col">Director</th>
-<!--          <th scope="col">Year</th>-->
+          <th scope="col">Rent Date</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -30,6 +30,7 @@
           <td>{{ film.filmTitle }}</td>
           <td>{{ film.imdbId }}</td>
           <td>{{ film.director }}</td>
+          <td>{{film.rentalDate}}</td>
 <!--          <td>{{ film.year }}</td>-->
           <td>
             <!-- Return button with an icon -->
@@ -38,6 +39,7 @@
               <button *ngIf="!film.returnApproved" type="button" class="btn btn-outline-warning btn-sm text-white" (click)="onReturnApprove(film); $event.stopPropagation()" title="Approve">
               <i class="fas fa-circle-check"></i>
             </button>
+               <i *ngIf="film.returnApproved" class="fas fa-circle-check text-success" aria-hidden="true"> Approved</i>
 
             </div>
           </td>

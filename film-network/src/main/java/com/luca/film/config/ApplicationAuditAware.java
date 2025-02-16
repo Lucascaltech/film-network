@@ -9,20 +9,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
-public class ApplicationAuditAware implements AuditorAware<Integer> {
+public class ApplicationAuditAware implements AuditorAware<String> {
 
     /**
      * Get the current user id
      * @return the current user id
      */
     @Override
-    public Optional<Integer> getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
             return Optional.empty();
         }
 
-        User userPricipal = (User) authentication.getPrincipal();
-        return Optional.ofNullable(userPricipal.getId());
+//        User userPricipal = (User) authentication.getPrincipal();
+        return Optional.ofNullable(authentication.getName());
     }
 }

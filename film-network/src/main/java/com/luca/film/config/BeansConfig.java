@@ -21,32 +21,32 @@ import java.util.Collections;
 
 @Configuration
 public class BeansConfig {
-    private final UserDetailsService userDetailsService;
+//    private final UserDetailsService userDetailsService;
 
-    public BeansConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+//    public BeansConfig(UserDetailsService userDetailsService) {
+//        this.userDetailsService = userDetailsService;
+//    }
 
     /**
      * Create an authentication provider
      * @return the authentication provider
      */
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService);
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
 
     /**
      * Create a password encoder
      * @return the password encoder
      */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     /**
      *  Create an authentication manager
@@ -55,17 +55,17 @@ public class BeansConfig {
      * @return the authentication manager
      * @throws Exception if an error occurs while creating the authentication manager
      */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+//        return configuration.getAuthenticationManager();
+//    }
 
     /**
      * Create an auditor aware bean
      * @return the auditor aware bean
      */
     @Bean
-    public AuditorAware<Integer> auditorAware() {
+    public AuditorAware<String> auditorAware() {
         return new ApplicationAuditAware();
     }
 

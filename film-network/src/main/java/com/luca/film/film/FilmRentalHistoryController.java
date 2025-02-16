@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +30,8 @@ public class FilmRentalHistoryController {
      * @return a ResponseEntity containing the created rental history and HTTP status
      */
     @PostMapping
-    public ResponseEntity<FilmRentalHistoryResponse> createRentalHistory(@Valid @RequestBody FilmRentalHistoryRequest request) {
-            FilmRentalHistoryResponse response = filmRentalHistoryService.createRentalHistory(request);
+    public ResponseEntity<FilmRentalHistoryResponse> createRentalHistory(@Valid @RequestBody FilmRentalHistoryRequest request, Authentication authentication) {
+            FilmRentalHistoryResponse response = filmRentalHistoryService.createRentalHistory(request, authentication);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }

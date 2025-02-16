@@ -19,18 +19,18 @@ public class FilmRentalHistoryMapper {
      * into a FilmRentalHistory entity.
      *
      * @param request the DTO containing rental history details
-     * @param user    the User who rented the film
+     * @param userId    the User who rented the film
      * @param film    the Film being rented
      * @return a FilmRentalHistory entity
      */
-    public FilmRentalHistory toFilmRentalHistory(FilmRentalHistoryRequest request, User user, Film film) {
+    public FilmRentalHistory toFilmRentalHistory(FilmRentalHistoryRequest request, String userId, Film film) {
         return FilmRentalHistory.builder()
                 .rentalDate(request.rentalDate())
                 .returnDate(request.returnDate())
                 .returned(request.returned())
                 .returnedApproved(request.returnedApproved())
                 .rentalPrice(request.rentalPrice())
-                .user(user)
+                .userId(userId)
                 .film(film)
                 .build();
     }
@@ -49,7 +49,7 @@ public class FilmRentalHistoryMapper {
                 .returned(history.isReturned())
                 .returnedApproved(history.isReturnedApproved())
                 .rentalPrice(history.getRentalPrice())
-                .userId(history.getUser() != null ? history.getUser().getId() : null)
+                .userId(history.getUserId() != null ? history.getUserId(): null)
                 .filmId(history.getFilm() != null ? history.getFilm().getId() : null)
                 .build();
     }

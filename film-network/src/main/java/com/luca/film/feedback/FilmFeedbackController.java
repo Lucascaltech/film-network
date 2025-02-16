@@ -35,8 +35,8 @@ public class FilmFeedbackController {
     public ResponseEntity<FilmFeedbackResponse> createFeedback(@Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
 
         FilmFeedbackResponse response = filmFeedbackService.createFeedback(request, authentication);
-        User user = (User) authentication.getPrincipal();
-        if (response.getUserId().equals(user.getId())) {
+//        User user = (User) authentication.getPrincipal();
+        if (response.getUserId().equals(authentication.getName())) {
             response.setOwnFeedback(true);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -52,8 +52,8 @@ public class FilmFeedbackController {
     public ResponseEntity<FilmFeedbackResponse> getFeedbackById(@PathVariable Integer id, Authentication authentication) {
 
         FilmFeedbackResponse response = filmFeedbackService.getFeedbackById(id);
-        User user = (User) authentication.getPrincipal();
-        if (response.getUserId().equals(user.getId())) {
+//        User user = (User) authentication.getPrincipal();
+        if (response.getUserId().equals(authentication.getName())) {
             response.setOwnFeedback(true);
         }
         return ResponseEntity.ok(response);
@@ -67,11 +67,11 @@ public class FilmFeedbackController {
     @GetMapping
     public ResponseEntity<List<FilmFeedbackResponse>> getAllFeedback(Authentication authentication) {
 
-        User user = (User) authentication.getPrincipal();
+//        User user = (User) authentication.getPrincipal();
         List<FilmFeedbackResponse> responses = filmFeedbackService.getAllFeedback();
         responses.forEach(
                 feedback -> {
-                    if (user.getId().equals(feedback.getUserId())) {
+                    if (authentication.getName().equals(feedback.getUserId())) {
                         feedback.setOwnFeedback(true);
                     }
                 }
@@ -89,9 +89,9 @@ public class FilmFeedbackController {
     @PutMapping("/{id}")
     public ResponseEntity<FilmFeedbackResponse> updateFeedback(@PathVariable Integer id, @Valid @RequestBody FilmFeedbackRequest request, Authentication authentication) {
 
-        User user = (User) authentication.getPrincipal();
+//        User user = (User) authentication.getPrincipal();
         FilmFeedbackResponse response = filmFeedbackService.updateFeedback(id, request);
-        if (user.getId().equals(response.getUserId())) {
+        if (authentication.getName().equals(response.getUserId())) {
             response.setOwnFeedback(true);
         }
         return ResponseEntity.ok(response);
@@ -123,9 +123,8 @@ public class FilmFeedbackController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, Authentication authentication) {
         PageResponse<FilmFeedbackResponse> feedbackList = filmFeedbackService.getFeedbackForFilmContent(filmId, page, size);
-        User user = (User) authentication.getPrincipal();
         feedbackList.getContent().forEach(feedback -> {
-            if (feedback.getUserId().equals(user.getId())) {
+            if (feedback.getUserId().equals(authentication.getName())) {
                 feedback.setOwnFeedback(true);
             }
         });

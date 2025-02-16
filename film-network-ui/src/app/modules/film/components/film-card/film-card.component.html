@@ -3,7 +3,7 @@
   <img (click)="onShowDetails()" [src]="filmPoster" alt="Film Poster" class="card-img-top rounded" style="width: 100%; height: 100%;" (error)="filmPoster = ''">
 
   <!-- Overlay Action Buttons (Top Right) -->
-  <div style="position: absolute; top: 0; right: 0; padding: 0.5rem;" class="text-end" *ngIf="userId == film.addedBy">
+  <div style="position: absolute; top: 0; right: 0; padding: 0.5rem;" class="text-end" *ngIf="userId == film.addedBy as string">
     <i (click)="onEdit()" class="fas fa-edit fs-5 text-primary me-2 action-icon" title="Edit film"></i>
     <i (click)="onDelete()" class="fas fa-trash-alt fs-5 text-danger me-2 action-icon" title="Delete Film"></i>
   </div>

@@ -1,56 +1,56 @@
-<div class="container-fluid card login-container p-4 bg-secondary text-white">
-  <h2 class="text-start fw-bold">Login</h2>
-  <hr>
-  <!-- Display error messages if any -->
-  <div *ngIf="errorMsg?.length" class="alert alert-danger" role="alert">
-    <p *ngFor="let error of errorMsg">{{ error }}</p>
-  </div>
+<!--<div class="container-fluid card login-container p-4 bg-secondary text-white">-->
+<!--  <h2 class="text-start fw-bold">Login</h2>-->
+<!--  <hr>-->
+<!--  &lt;!&ndash; Display error messages if any &ndash;&gt;-->
+<!--  <div *ngIf="errorMsg?.length" class="alert alert-danger" role="alert">-->
+<!--    <p *ngFor="let error of errorMsg">{{ error }}</p>-->
+<!--  </div>-->
 
-  <!-- Login form -->
-  <form (ngSubmit)="login()" #loginForm="ngForm">
-    <!-- Email Input -->
-    <div class="mb-3">
-      <label for="email" class="form-label">Email address</label>
-      <input
-        type="email"
-        id="email"
-        class="form-control"
-        placeholder="johndoe@example.com"
-        [(ngModel)]="authRequest.email"
-        name="email"
-        required>
-    </div>
+<!--  &lt;!&ndash; Login form &ndash;&gt;-->
+<!--  <form (ngSubmit)="login()" #loginForm="ngForm">-->
+<!--    &lt;!&ndash; Email Input &ndash;&gt;-->
+<!--    <div class="mb-3">-->
+<!--      <label for="email" class="form-label">Email address</label>-->
+<!--      <input-->
+<!--        type="email"-->
+<!--        id="email"-->
+<!--        class="form-control"-->
+<!--        placeholder="johndoe@example.com"-->
+<!--        [(ngModel)]="authRequest.email"-->
+<!--        name="email"-->
+<!--        required>-->
+<!--    </div>-->
 
-    <!-- Password Input -->
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input
-        type="password"
-        id="password"
-        class="form-control"
-        placeholder="Password"
-        [(ngModel)]="authRequest.password"
-        name="password"
-        required>
-    </div>
+<!--    &lt;!&ndash; Password Input &ndash;&gt;-->
+<!--    <div class="mb-3">-->
+<!--      <label for="password" class="form-label">Password</label>-->
+<!--      <input-->
+<!--        type="password"-->
+<!--        id="password"-->
+<!--        class="form-control"-->
+<!--        placeholder="Password"-->
+<!--        [(ngModel)]="authRequest.password"-->
+<!--        name="password"-->
+<!--        required>-->
+<!--    </div>-->
 
-    <div class="d-flex justify-content-sm-between mb-3">
-      <button class="btn btn-primary fw-bold" type="submit" [disabled]="isLoading">
-        <ng-container *ngIf="!isLoading; else loadingTemplate">
-          <em class="fas fa-sign-in-alt"></em>&nbsp;Login
-        </ng-container>
-        <ng-template #loadingTemplate>
-          <app-loader></app-loader>&nbsp;<!-- The loader is circular -->
-        </ng-template>
-      </button>
-      <div class="d-flex align-items-center justify-content-around">
-        Don't have an account?
-        <button (click)="register()" class="btn btn-link text-white pb-2" type="button">Register</button>
-      </div>
-    </div>
-
-
-  </form>
+<!--    <div class="d-flex justify-content-sm-between mb-3">-->
+<!--      <button class="btn btn-primary fw-bold" type="submit" [disabled]="isLoading">-->
+<!--        <ng-container *ngIf="!isLoading; else loadingTemplate">-->
+<!--          <em class="fas fa-sign-in-alt"></em>&nbsp;Login-->
+<!--        </ng-container>-->
+<!--        <ng-template #loadingTemplate>-->
+<!--          <app-loader></app-loader>&nbsp;&lt;!&ndash; The loader is circular &ndash;&gt;-->
+<!--        </ng-template>-->
+<!--      </button>-->
+<!--      <div class="d-flex align-items-center justify-content-around">-->
+<!--        Don't have an account?-->
+<!--        <button (click)="register()" class="btn btn-link text-white pb-2" type="button">Register</button>-->
+<!--      </div>-->
+<!--    </div>-->
 
 
-</div>
+<!--  </form>-->
+
+
+<!--</div>-->

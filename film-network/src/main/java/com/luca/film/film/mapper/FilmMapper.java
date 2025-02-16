@@ -55,7 +55,7 @@ public class FilmMapper {
                 .synopsis(film.getSynopsis())
                 .filmPoster(FileUtils.readFileFromLocation(film.getFilmPoster()))
                 .year(film.getYear())
-                .addedBy(film.getAddedBy().getId())
+                .addedBy(film.getCreatedBy())
                 .archive(film.isArchive())
                 .rating(film.getRating())
                 .genre(film.getGenre())

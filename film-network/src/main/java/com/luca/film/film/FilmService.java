@@ -34,9 +34,8 @@ public class FilmService {
     private final FileStorageService fileStorageService;
 
     public Integer save(FilmRequest filmRequest, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
         Film film = filmMapper.toFilm(filmRequest);
-        film.setAddedBy(user);
+        film.setCreatedBy(authentication.getName());
         return filmRepository.save(film).getId();
     }
 
@@ -54,9 +53,8 @@ public class FilmService {
     }
 
     public PageResponse<FilmResponse> getAllFilms(Integer page, Integer size, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Film> films = filmRepository.findAll(pageable, user.getId());
+        Page<Film> films = filmRepository.findAll(pageable, authentication.getName());
         List<FilmResponse> filmsResponse = films.stream().map(filmMapper::toFilmResponse).toList();
         return new PageResponse<>(
                 filmsResponse,
@@ -75,7 +73,8 @@ public class FilmService {
         Film updatedFilm = filmMapper.toFilm(filmRequest);
         updatedFilm.setId(existingFilm.getId());
         updatedFilm.setFilmPoster(existingFilm.getFilmPoster());
-        updatedFilm.setAddedBy(existingFilm.getAddedBy());
+        updatedFilm.setCreatedBy(existingFilm.getCreatedBy());
+        updatedFilm.setLastModifiedBy(authentication.getName());
         Film savedFilm = filmRepository.save(updatedFilm);
         return filmMapper.toFilmResponse(savedFilm);
     }
@@ -87,9 +86,8 @@ public class FilmService {
     }
 
     public PageResponse<FilmResponse> getAllFilmsYouOwn(Integer page, Integer size, Authentication authenticatedUser) {
-        User user = (User) authenticatedUser.getPrincipal();
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Film> films = filmRepository.findAllByAddedBy(user, pageable);
+        Page<Film> films = filmRepository.findAllByCreatedBy(authenticatedUser.getName(), pageable);
         List<FilmResponse> responses = films.stream().map(filmMapper::toFilmResponse).toList();
         return new PageResponse<>(
                 responses,
@@ -111,9 +109,8 @@ public class FilmService {
      * @return a paginated list of RentedFilmResponse DTOs for borrowed films
      */
     public PageResponse<RentedFilmResponse> getBorrowedFilms(int page, int size, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
         Pageable pageable = PageRequest.of(page, size, Sort.by("rentalDate").descending());
-        Page<FilmRentalHistory> borrowedRecords = filmRentalHistoryRepository.findAllByUser(user, pageable);
+        Page<FilmRentalHistory> borrowedRecords = filmRentalHistoryRepository.findAllByCreatedBy(authentication.getName(), pageable);
         List<RentedFilmResponse> responses = borrowedRecords
                 .stream()
                 .map(filmRentalHistoryMapper::toRentedFilmResponse)
@@ -139,9 +136,8 @@ public class FilmService {
      * @return a paginated list of RentedFilmResponse DTOs for returned films
      */
     public PageResponse<RentedFilmResponse> getReturnedFilmsForOwner(int page, int size, Authentication authentication) {
-        User owner = (User) authentication.getPrincipal();
         Pageable pageable = PageRequest.of(page, size, Sort.by("returnDate").descending());
-        Page<FilmRentalHistory> returnedRecords = filmRentalHistoryRepository.findAllByFilm_AddedBy_IdAndReturnedTrue(owner.getId(), pageable);
+        Page<FilmRentalHistory> returnedRecords = filmRentalHistoryRepository.findAllByFilm_CreatedByAndReturnedTrue(authentication.getName(), pageable);
         List<RentedFilmResponse> responses = returnedRecords
                 .stream()
                 .map(filmRentalHistoryMapper::toRentedFilmResponse)
@@ -161,7 +157,7 @@ public class FilmService {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with ID: " + filmId));
 
-        if (!Objects.equals(film.getAddedBy(), authentication.getPrincipal())) {
+        if (!Objects.equals(film.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot update another user's film archive status");
         }
 
@@ -178,12 +174,11 @@ public class FilmService {
             throw new OperationNotPermittedException("The requested film cannot be rented because it is archived.");
         }
 
-        User user = (User) authentication.getPrincipal();
-        if (Objects.equals(film.getAddedBy(), user)) {
+        if (Objects.equals(film.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot rent your own film.");
         }
 
-        boolean isAlreadyRentedByUser = filmRentalHistoryRepository.isAlreadyRentedByUser(filmId, user.getId());
+        boolean isAlreadyRentedByUser = filmRentalHistoryRepository.isAlreadyRentedByUser(filmId, authentication.getName());
         if (isAlreadyRentedByUser) {
             throw new OperationNotPermittedException("You have already rented this film.");
         }
@@ -193,7 +188,7 @@ public class FilmService {
                 .returned(false)
                 .rentalDate(LocalDateTime.now())
                 .film(film)
-                .user(user)
+                .userId(authentication.getName())
                 .rentalPrice(10) // adjust price as needed
                 .build();
 
@@ -208,13 +203,12 @@ public class FilmService {
             throw new OperationNotPermittedException("The requested film cannot be returned because it is archived.");
         }
 
-        User user = (User) authentication.getPrincipal();
-        if (Objects.equals(film.getAddedBy(), user)) {
+        if (Objects.equals(film.getCreatedBy(), authentication.getName())) {
             throw new OperationNotPermittedException("You cannot return your own film.");
         }
 
-        FilmRentalHistory rentalRecord = filmRentalHistoryRepository.findByFilmAndUserAndReturnedAndReturnedApproved(
-                film, user, false, false
+        FilmRentalHistory rentalRecord = filmRentalHistoryRepository.findByFilmAndCreatedByAndReturnedAndReturnedApproved(
+                film, authentication.getName(), false, false
         ).orElseThrow(() -> new OperationNotPermittedException("No active rental found for this film."));
 
         rentalRecord.setReturned(true);
@@ -229,9 +223,8 @@ public class FilmService {
             throw new OperationNotPermittedException("The requested film cannot have its return approved because it is archived.");
         }
 
-        User user = (User) authentication.getPrincipal();
         // Only the owner of the film can approve its return.
-        if (user.getId() != film.getAddedBy().getId() ) {
+        if (!Objects.equals(authentication.getName(), film.getCreatedBy()) ) {
             throw new OperationNotPermittedException("Only the film owner can approve the return of this film.");
         }
 
@@ -250,8 +243,7 @@ public class FilmService {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with the given id: " + filmId));
 
-        User user = (User) authentication.getPrincipal();
-        String poster = (String) fileStorageService.saveFile(file, user.getId());
+        String poster =fileStorageService.saveFile(file, authentication.getName());
         film.setFilmPoster(poster);
         filmRepository.save(film);
     }

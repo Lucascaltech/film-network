@@ -3,12 +3,11 @@ package com.luca.film.auth;
 import com.luca.film.email.EmailService;
 import com.luca.film.email.EmailTemplateName;
 import com.luca.film.role.Role;
-import com.luca.film.role.RoleRepository;
+//import com.luca.film.role.RoleRepository;
 import com.luca.film.security.JwtService;
 import com.luca.film.user.Token;
-import com.luca.film.user.TokenRepository;
+//import com.luca.film.user.TokenRepository;
 import com.luca.film.user.User;
-import com.luca.film.user.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final RoleRepository roleRepository;
+//    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
+//    private final TokenRepository tokenRepository;
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -46,9 +44,9 @@ public class AuthenticationService {
      * @param request the registration request
      * @throws MessagingException if an error occurs while sending the email
      */
-    public void register(RegistrationRequest request) throws MessagingException {
-        Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new IllegalStateException("ROLE USER was not initiated"));
+    public void register(RegistrationRequest request) throws MessagingException  {
+//        Role userRole = roleRepository.findByName("USER")
+//                .orElseThrow(() -> new IllegalStateException("ROLE USER was not initiated"));
         User user = User.builder()
                 .firstname(request.getFirstName())
                 .lastname(request.getLastName())
@@ -56,9 +54,9 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .accountLocked(false)
                 .enabled(false)
-                .roles(List.of(userRole))
+//                .roles(List.of(userRole))
                 .build();
-        userRepository.save(user);
+//        userRepository.save(user);
         sendValidationEmail(user);
     }
 
@@ -77,7 +75,7 @@ public class AuthenticationService {
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
                 .user(user)
                 .build();
-        tokenRepository.save(token);
+//        tokenRepository.save(token);
 
         return generatedToken;
     }
@@ -139,7 +137,7 @@ public class AuthenticationService {
         claims.put("fullName", user.getFullName());
         String jwt = jwtService.generateToken(claims,user);
 
-        return AuthenticationResponse.builder().token(jwt).id(user.getId()).build();
+        return AuthenticationResponse.builder().token(jwt).id(auth.getName()).build();
     }
 
 
@@ -149,21 +147,21 @@ public class AuthenticationService {
      */
     @Transient
     public void confirmAccount(String token) throws MessagingException {
-        Token savedToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new IllegalStateException("Token not found"));
+//        Token savedToken = tokenRepository.findByToken(token)
+//                .orElseThrow(() -> new IllegalStateException("Token not found"));
 
-        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
-            sendValidationEmail(savedToken.getUser());
-            throw new IllegalStateException("Activation token has expired. A new token has been sent.");
-        }
+//        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+//            sendValidationEmail(savedToken.getUser());
+//            throw new IllegalStateException("Activation token has expired. A new token has been sent.");
+//        }
 
-        User user = userRepository.findById(savedToken.getUser().getId())
-                .orElseThrow(() -> new IllegalStateException("User not found"));
+//        User user = userRepository.findById(savedToken.getUser().getId())
+//                .orElseThrow(() -> new IllegalStateException("User not found"));
 
-        user.setEnabled(true);
-        user.setAccountLocked(false);
-        userRepository.save(user);
-        savedToken.setValidatedAt(LocalDateTime.now());
-        tokenRepository.save(savedToken);
+//        user.setEnabled(true);
+//        user.setAccountLocked(false);
+//        userRepository.save(user);
+//        savedToken.setValidatedAt(LocalDateTime.now());
+//        tokenRepository.save(savedToken);
     }
 }

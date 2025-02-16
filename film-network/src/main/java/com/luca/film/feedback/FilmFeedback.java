@@ -23,8 +23,7 @@ public class FilmFeedback extends BaseEntity {
     @JoinColumn(name = "film_id")
     private Film film;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column
+    private String userid;
 
 }

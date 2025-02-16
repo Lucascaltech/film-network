@@ -32,9 +32,9 @@ public class Film extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    @ManyToOne
-    @JoinColumn(name = "addedBy", nullable = false)
-    private User addedBy;
+//    @ManyToOne
+//    @JoinColumn(name = "addedBy", nullable = false)
+//    private User addedBy;
 
     @OneToMany(mappedBy = "film")
     private List<FilmFeedback> feedbacks;

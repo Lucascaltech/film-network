@@ -13,9 +13,10 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
     @Query("""
            select film from Film film 
            where film.archive = false 
-             AND film.addedBy.id != :userId
+             AND film.createdBy != :userId
            """)
-    Page<Film> findAll(Pageable pageable, Integer userId);
+    Page<Film> findAll(Pageable pageable, String userId);
 
-    Page<Film> findAllByAddedBy(User addedBy, Pageable pageable);
+    Page<Film> findAllByCreatedBy(String createdBy, Pageable pageable);
+
 }

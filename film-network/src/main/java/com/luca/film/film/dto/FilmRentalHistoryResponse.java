@@ -18,6 +18,6 @@ public class FilmRentalHistoryResponse {
     private boolean returned;
     private boolean returnedApproved;
     private double rentalPrice;
-    private Integer userId;
+    private String userId;
     private Integer filmId;
 }
