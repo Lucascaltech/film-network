@@ -34,11 +34,11 @@
       </div>
     </div>
 
-    <!-- Feedback Section -->
-      <div class="feedback-section mt-3">
-        <!-- Include the FeedbackComponent -->
-       <app-feedbacks [film]="film!" ></app-feedbacks>
-      </div>
+    <!-- Scrollable Feedback Section -->
+    <div class="feedback-section mt-3 overflow-auto" style="max-height: 300px; border-top: 1px solid #ccc; padding: 10px;">
+      <!-- Include the FeedbackComponent -->
+      <app-feedbacks [film]="film!"></app-feedbacks>
+    </div>
 
     <!-- Modal Footer: Close Button -->
     <div class="modal-footer">

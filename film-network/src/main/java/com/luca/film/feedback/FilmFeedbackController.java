@@ -64,20 +64,20 @@ public class FilmFeedbackController {
      *
      * @return a ResponseEntity containing a list of FilmFeedbackResponse DTOs
      */
-    @GetMapping
-    public ResponseEntity<List<FilmFeedbackResponse>> getAllFeedback(Authentication authentication) {
-
-//        User user = (User) authentication.getPrincipal();
-        List<FilmFeedbackResponse> responses = filmFeedbackService.getAllFeedback();
-        responses.forEach(
-                feedback -> {
-                    if (authentication.getName().equals(feedback.getUserId())) {
-                        feedback.setOwnFeedback(true);
-                    }
-                }
-        );
-        return ResponseEntity.ok(responses);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<FilmFeedbackResponse>> getAllFeedback(Authentication authentication) {
+//
+////        User user = (User) authentication.getPrincipal();
+//        List<FilmFeedbackResponse> responses = filmFeedbackService.getAllFeedback();
+//        responses.forEach(
+//                feedback -> {
+//                    if (authentication.getName().equals(feedback.getUserId())) {
+//                        feedback.setOwnFeedback(true);
+//                    }
+//                }
+//        );
+//        return ResponseEntity.ok(responses);
+//    }
 
     /**
      * Updates an existing film feedback record.

@@ -4,6 +4,8 @@ import com.luca.film.film.Film;
 import com.luca.film.common.BaseEntity;
 import com.luca.film.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,6 +18,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class FilmFeedback extends BaseEntity {
+
+    @Min(0)
+    @Max(5)
     private Double rating;  // 0-5 stars
     private String review;
 

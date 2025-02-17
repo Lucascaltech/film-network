@@ -19,10 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-/**
- * Service layer for managing Film Feedback records.
- */
 @Service
 @RequiredArgsConstructor
 public class FilmFeedbackService {
@@ -30,25 +28,13 @@ public class FilmFeedbackService {
     private final FilmFeedbackRepository filmFeedbackRepository;
     private final FilmFeedbackMapper filmFeedbackMapper;
     private final FilmRepository filmRepository;
-//    private final UserRepository userRepository;
     private final FilmRentalHistoryRepository filmRentalHistoryRepository;
 
-    /**
-     * Creates a new film feedback record.
-     *
-     * @param request the DTO containing feedback details
-     * @return the created FilmFeedbackResponse DTO
-     */
     @Transactional
     public FilmFeedbackResponse createFeedback(FilmFeedbackRequest request, Authentication authentication) {
-        // Retrieve associated Film and User entities
         Film film = filmRepository.findById(request.filmId())
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + request.filmId()));
 
-        if (film.isArchive()){
-            throw new OperationNotPermittedException("you can not give feedback to archived film");
-        }
-//        User user = (User) authentication.getPrincipal();
         if(Objects.equals(film.getCreatedBy(), authentication.getName())){
             throw  new OperationNotPermittedException("You can give feedback to your own film");
         }
@@ -64,75 +50,32 @@ public class FilmFeedbackService {
         return filmFeedbackMapper.toFilmFeedbackResponse(saved);
     }
 
-    /**
-     * Retrieves a film feedback record by its ID.
-     *
-     * @param id the feedback ID
-     * @return the FilmFeedbackResponse DTO
-     */
     public FilmFeedbackResponse getFeedbackById(Integer id) {
-        com.luca.film.feedback.FilmFeedback feedback = filmFeedbackRepository.findById(id)
+        FilmFeedback feedback = filmFeedbackRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
         return filmFeedbackMapper.toFilmFeedbackResponse(feedback);
     }
 
     /**
-     * Retrieves all film feedback records.
-     *
-     * @return a list of FilmFeedbackResponse DTOs
+     * Retrieves feedback for a film ensuring it is always fresh and correctly ordered.
+     * Uses explicit sorting and verifies the film's existence.
      */
-    public List<FilmFeedbackResponse> getAllFeedback() {
-        return filmFeedbackRepository.findAll()
-                .stream()
-                .map(filmFeedbackMapper::toFilmFeedbackResponse)
-                .toList();
-    }
-
-    /**
-     * Updates an existing film feedback record.
-     *
-     * @param id      the ID of the feedback record to update
-     * @param request the DTO containing updated feedback details
-     * @return the updated FilmFeedbackResponse DTO
-     */
-    @Transactional
-    public FilmFeedbackResponse updateFeedback(Integer id, FilmFeedbackRequest request) {
-        com.luca.film.feedback.FilmFeedback existing = filmFeedbackRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
-        // For this example, we assume that the film and user are not changed during update.
-        existing.setRating(request.rating());
-        existing.setReview(request.review());
-        com.luca.film.feedback.FilmFeedback saved = filmFeedbackRepository.save(existing);
-        return filmFeedbackMapper.toFilmFeedbackResponse(saved);
-    }
-
-    /**
-     * Deletes a film feedback record by its ID.
-     *
-     * @param id the ID of the feedback record to delete
-     */
-    public void deleteFeedback(Integer id) {
-        com.luca.film.feedback.FilmFeedback existing = filmFeedbackRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
-        filmFeedbackRepository.delete(existing);
-    }
-
-   /**
-     * Retrieves a page of feedback for a given film, sorted so that the most recent feedback is shown first,
-     * and returns only the content as a list.
-     *
-     * @param filmId the ID of the film for which to retrieve feedback
-     * @param page   the page number (0-based)
-     * @param size   the number of feedback records per page
-     * @return a list of FilmFeedbackResponse DTOs
-     */
+    @Transactional(readOnly = true)
     public PageResponse<FilmFeedbackResponse> getFeedbackForFilmContent(Integer filmId, int page, int size) {
+        // Ensure film exists before fetching feedback
+        filmRepository.findById(filmId)
+                .orElseThrow(() -> new RuntimeException("Film not found with id: " + filmId));
+
+        // Define paging and sorting
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        // Fetch fresh data from the database
         Page<FilmFeedback> feedbackPage = filmFeedbackRepository.findByFilm_Id(filmId, pageable);
+
         return new PageResponse<>(
                 feedbackPage.stream()
-                .map(filmFeedbackMapper::toFilmFeedbackResponse)
-                .toList(),
+                        .map(filmFeedbackMapper::toFilmFeedbackResponse)
+                        .toList(),
                 feedbackPage.getNumber(),
                 feedbackPage.getSize(),
                 feedbackPage.getTotalElements(),
@@ -140,5 +83,41 @@ public class FilmFeedbackService {
                 feedbackPage.isFirst(),
                 feedbackPage.isLast()
         );
+    }
+
+    @Transactional
+    public FilmFeedbackResponse updateFeedback(Integer id, FilmFeedbackRequest request) {
+        FilmFeedback existingFeedback = filmFeedbackRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
+
+        existingFeedback.setRating(request.rating());
+        existingFeedback.setReview(request.review());
+
+        FilmFeedback updatedFeedback = filmFeedbackRepository.save(existingFeedback);
+        updateFilmRating(updatedFeedback.getFilm());
+
+        return filmFeedbackMapper.toFilmFeedbackResponse(updatedFeedback);
+    }
+
+    @Transactional
+    public void deleteFeedback(Integer id) {
+        FilmFeedback existingFeedback = filmFeedbackRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
+
+        Film film = existingFeedback.getFilm();
+        filmFeedbackRepository.delete(existingFeedback);
+        updateFilmRating(film);
+    }
+
+    private void updateFilmRating(Film film) {
+        List<FilmFeedback> feedbacks = filmFeedbackRepository.findByFilm_Id(film.getId(), Pageable.unpaged()).getContent();
+
+        double averageRating = feedbacks.stream()
+                .mapToDouble(FilmFeedback::getRating)
+                .average()
+                .orElse(0.0);
+
+        film.setRating(averageRating);
+        filmRepository.save(film);
     }
 }

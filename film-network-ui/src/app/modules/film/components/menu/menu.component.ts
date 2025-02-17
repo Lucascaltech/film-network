@@ -3,6 +3,7 @@ import {Router, RouterLink} from "@angular/router";
 import {TokenService} from "../../../../services/token/token.service";
 import {KeycloakService} from "../../../../services/keycloak/keycloak.service";
 import {async} from "rxjs";
+import {UserProfile} from "../../../../services/keycloak/user-profile";
 
 @Component({
   selector: 'app-menu',
@@ -21,8 +22,10 @@ export class MenuComponent implements OnInit{
   ) {
   }
 
+  firstName:string =  '';
+  lastName: string ='';
   // user: UserResponse = {}
-  ngOnInit(): void {
+  async ngOnInit() {
       const linkColor = document.querySelectorAll('.nav-link');
       linkColor.forEach(link => {
         if (window.location.href.endsWith(link.getAttribute('href') || '')){
@@ -34,12 +37,14 @@ export class MenuComponent implements OnInit{
         });
       });
 
-      // getUserInfo();
+      this.firstName = this.keyCloakService.profile?.firstName!
+      this.lastName = this.keyCloakService.profile?.lastName!;
 
   }
 
-  getUserInfo():void{
-
+  getUserInfo():string{
+    // return this.keyCloakService.keycloak.subject
+    return this.firstName + " "+ this.lastName;
   }
 
   async logout() {
