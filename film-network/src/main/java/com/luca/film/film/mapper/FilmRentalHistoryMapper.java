@@ -5,7 +5,6 @@ import com.luca.film.film.FilmRentalHistory;
 import com.luca.film.film.dto.FilmRentalHistoryRequest;
 import com.luca.film.film.dto.FilmRentalHistoryResponse;
 import com.luca.film.film.dto.RentedFilmResponse;
-import com.luca.film.user.User;
 import org.springframework.stereotype.Service;
 
 /**

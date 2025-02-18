@@ -6,9 +6,12 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Request DTO for creating or updating a film feedback record.
+ * Request DTO (Data Transfer Object) for submitting feedback on a film.
+ * This DTO is used for both creating and updating feedback records.
+ * It ensures that the input data meets validation constraints before processing.
  */
 public record FilmFeedbackRequest(
+
         @NotNull(message = "Film id is required")
         Integer filmId,
 

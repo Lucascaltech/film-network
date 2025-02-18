@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * REST controller for managing film rental history records.
+ * REST controller for managing film rental history records. This class provides endpoints for creating, updating,
+ * and deleting rental history records, as well as for retrieving rental history details.
  */
 @RestController
 @RequestMapping("film-rental-histories")
@@ -83,7 +84,7 @@ public class FilmRentalHistoryController {
      * @return a ResponseEntity with HTTP status 204 if deletion is successful
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteRentalHistory(@PathVariable Integer id) {
+    public ResponseEntity<Object> deleteRentalHistory(@PathVariable Integer id) {
             filmRentalHistoryService.deleteRentalHistory(id);
             return ResponseEntity.noContent().build();
     }

@@ -8,7 +8,6 @@ import com.luca.film.film.dto.RentedFilmResponse;
 import com.luca.film.film.exceptions.OperationNotPermittedException;
 import com.luca.film.film.mapper.FilmMapper;
 import com.luca.film.film.mapper.FilmRentalHistoryMapper;
-import com.luca.film.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +22,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service class responsible for handling film-related operations.
+ * This includes CRUD operations, renting, returning, and archiving films.
+ */
 @Service
 @RequiredArgsConstructor
 public class FilmService {
@@ -33,18 +36,37 @@ public class FilmService {
     private final FilmRentalHistoryMapper filmRentalHistoryMapper;
     private final FileStorageService fileStorageService;
 
+    /**
+     * Creates and saves a new film.
+     *
+     * @param filmRequest   DTO containing film details such as title, description, and category.
+     * @param authentication The currently authenticated user creating the film.
+     * @return The ID of the newly created film.
+     */
     public Integer save(FilmRequest filmRequest, Authentication authentication) {
         Film film = filmMapper.toFilm(filmRequest);
         film.setCreatedBy(authentication.getName());
         return filmRepository.save(film).getId();
     }
 
+    /**
+     * Retrieves a film by its ID.
+     *
+     * @param id The unique identifier of the film.
+     * @return A FilmResponse DTO with film details.
+     * @throws RuntimeException If no film is found with the given ID.
+     */
     public FilmResponse getById(Integer id) {
         Film film = filmRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + id));
         return filmMapper.toFilmResponse(film);
     }
 
+    /**
+     * Retrieves all films in the database.
+     *
+     * @return A list of FilmResponse DTOs for all films.
+     */
     public List<FilmResponse> getAll() {
         return filmRepository.findAll()
                 .stream()
@@ -52,21 +74,47 @@ public class FilmService {
                 .toList();
     }
 
+    /**
+     * Retrieves a paginated list of all films.
+     *
+     * @param page           The page number (zero-based index).
+     * @param size           The number of records per page.
+     * @param authentication The authenticated user requesting the films.
+     * @return A PageResponse containing paginated FilmResponse DTOs.
+     */
     public PageResponse<FilmResponse> getAllFilms(Integer page, Integer size, Authentication authentication) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<Film> films = filmRepository.findAll(pageable, authentication.getName());
-        List<FilmResponse> filmsResponse = films.stream().map(filmMapper::toFilmResponse).toList();
-        return new PageResponse<>(
-                filmsResponse,
-                films.getNumber(),
-                films.getSize(),
-                films.getTotalElements(),
-                films.getTotalPages(),
-                films.isFirst(),
-                films.isLast()
-        );
+        List<FilmResponse> responses = films.stream().map(filmMapper::toFilmResponse).toList();
+        return new PageResponse<>(responses, films.getNumber(), films.getSize(),
+                films.getTotalElements(), films.getTotalPages(), films.isFirst(), films.isLast());
     }
 
+    /**
+     * Retrieves a paginated list of films owned by the authenticated user.
+     *
+     * @param page            The page number (zero-based index).
+     * @param size            The number of records per page.
+     * @param authenticatedUser The authenticated user requesting the list.
+     * @return A PageResponse containing FilmResponse DTOs of owned films.
+     */
+    public PageResponse<FilmResponse> getAllFilmsYouOwn(Integer page, Integer size, Authentication authenticatedUser) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Film> films = filmRepository.findAllByCreatedBy(authenticatedUser.getName(), pageable);
+        List<FilmResponse> responses = films.stream().map(filmMapper::toFilmResponse).toList();
+        return new PageResponse<>(responses, films.getNumber(), films.getSize(),
+                films.getTotalElements(), films.getTotalPages(), films.isFirst(), films.isLast());
+    }
+
+    /**
+     * Updates an existing film.
+     *
+     * @param id              The ID of the film to update.
+     * @param filmRequest     The DTO containing updated film details.
+     * @param authentication  The authenticated user making the update.
+     * @return The updated FilmResponse DTO.
+     * @throws RuntimeException If no film is found with the given ID.
+     */
     public FilmResponse update(Integer id, FilmRequest filmRequest, Authentication authentication) {
         Film existingFilm = filmRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + id));
@@ -75,29 +123,19 @@ public class FilmService {
         updatedFilm.setFilmPoster(existingFilm.getFilmPoster());
         updatedFilm.setCreatedBy(existingFilm.getCreatedBy());
         updatedFilm.setLastModifiedBy(authentication.getName());
-        Film savedFilm = filmRepository.save(updatedFilm);
-        return filmMapper.toFilmResponse(savedFilm);
+        return filmMapper.toFilmResponse(filmRepository.save(updatedFilm));
     }
 
+    /**
+     * Deletes a film by its ID.
+     *
+     * @param id The ID of the film to delete.
+     * @throws RuntimeException If no film is found with the given ID.
+     */
     public void delete(Integer id) {
         Film film = filmRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + id));
         filmRepository.delete(film);
-    }
-
-    public PageResponse<FilmResponse> getAllFilmsYouOwn(Integer page, Integer size, Authentication authenticatedUser) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Film> films = filmRepository.findAllByCreatedBy(authenticatedUser.getName(), pageable);
-        List<FilmResponse> responses = films.stream().map(filmMapper::toFilmResponse).toList();
-        return new PageResponse<>(
-                responses,
-                films.getNumber(),
-                films.getSize(),
-                films.getTotalElements(),
-                films.getTotalPages(),
-                films.isFirst(),
-                films.isLast()
-        );
     }
 
     /**
@@ -153,6 +191,14 @@ public class FilmService {
         );
     }
 
+    /**
+     * Toggles the archive status of a film.
+     *
+     * @param filmId the ID of the film to toggle archive status
+     * @param authentication the authenticated user requesting the change
+     * @return the ID of the updated film
+     * @throws OperationNotPermittedException if the user is not the creator of the film
+     */
     public Integer toggleArchiveStatus(Integer filmId, Authentication authentication) throws OperationNotPermittedException {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with ID: " + filmId));
@@ -166,6 +212,14 @@ public class FilmService {
         return film.getId();
     }
 
+    /**
+     * Rents a film to the authenticated user.
+     *
+     * @param filmId the ID of the film to rent
+     * @param authentication the authenticated user renting the film
+     * @return the rental record ID
+     * @throws OperationNotPermittedException if the film is archived, already rented, or belongs to the user
+     */
     public Integer rentFilm(Integer filmId, Authentication authentication) {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with the given id: " + filmId));
@@ -178,9 +232,14 @@ public class FilmService {
             throw new OperationNotPermittedException("You cannot rent your own film.");
         }
 
-        boolean isAlreadyRentedByUser = filmRentalHistoryRepository.isAlreadyRentedByUser(filmId, authentication.getName());
-        if (isAlreadyRentedByUser) {
-            throw new OperationNotPermittedException("You have already rented this film.");
+        boolean isAlreadyRentedByUser = filmRentalHistoryRepository.isAlreadyRentedByUser(film.getId(), authentication.getName());
+        if (isAlreadyRentedByUser){
+            throw new OperationNotPermittedException("You have already rented the film");
+        }
+
+        boolean isAlreadyRented = filmRentalHistoryRepository.isAlreadyRented(film.getId());
+        if (isAlreadyRented) {
+            throw new OperationNotPermittedException("The film is already rented by another user.");
         }
 
         FilmRentalHistory rentalRecord = FilmRentalHistory.builder()
@@ -189,12 +248,20 @@ public class FilmService {
                 .rentalDate(LocalDateTime.now())
                 .film(film)
                 .userId(authentication.getName())
-                .rentalPrice(10) // adjust price as needed
+                .rentalPrice(10)
                 .build();
 
         return filmRentalHistoryRepository.save(rentalRecord).getId();
     }
 
+    /**
+     * Marks a rented film as returned by the authenticated user.
+     *
+     * @param filmId the ID of the film to return
+     * @param authentication the authenticated user returning the film
+     * @return the rental record ID
+     * @throws OperationNotPermittedException if no active rental is found
+     */
     public Integer returnFilm(Integer filmId, Authentication authentication) {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with the given id: " + filmId));
@@ -215,6 +282,14 @@ public class FilmService {
         return filmRentalHistoryRepository.save(rentalRecord).getId();
     }
 
+    /**
+     * Approves the return of a rented film by the film owner.
+     *
+     * @param filmId the ID of the film being returned
+     * @param authentication the authenticated owner approving the return
+     * @return the rental record ID
+     * @throws OperationNotPermittedException if the user is not the owner or no pending return exists
+     */
     public Integer approveReturnFilm(Integer filmId, Authentication authentication) {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with the given id: " + filmId));
@@ -223,13 +298,10 @@ public class FilmService {
             throw new OperationNotPermittedException("The requested film cannot have its return approved because it is archived.");
         }
 
-        // Only the owner of the film can approve its return.
         if (!Objects.equals(authentication.getName(), film.getCreatedBy()) ) {
             throw new OperationNotPermittedException("Only the film owner can approve the return of this film.");
         }
 
-        // Find the rental record for this film that has been returned (returned == true)
-        // but not yet approved (returnedApproved == false). Note that the borrower is not the owner.
         FilmRentalHistory rentalRecord = filmRentalHistoryRepository.findByFilmAndReturnedAndReturnedApproved(
                 film, true, false
         ).orElseThrow(() -> new OperationNotPermittedException("No pending return found for this film."));
@@ -239,11 +311,19 @@ public class FilmService {
         return filmRentalHistoryRepository.save(rentalRecord).getId();
     }
 
+    /**
+     * Uploads a film poster image.
+     *
+     * @param file            the image file to upload
+     * @param filmId          the ID of the film
+     * @param authentication  the authenticated user uploading the poster
+     * @throws EntityNotFoundException if the film is not found
+     */
     public void uploadFilmPoster(MultipartFile file, Integer filmId, Authentication authentication) {
         Film film = filmRepository.findById(filmId)
                 .orElseThrow(() -> new EntityNotFoundException("No film found with the given id: " + filmId));
 
-        String poster =fileStorageService.saveFile(file, authentication.getName());
+        String poster = fileStorageService.saveFile(file, authentication.getName());
         film.setFilmPoster(poster);
         filmRepository.save(film);
     }

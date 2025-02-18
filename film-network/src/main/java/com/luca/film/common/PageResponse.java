@@ -4,6 +4,11 @@ import lombok.*;
 
 import java.util.List;
 
+/**
+ * A generic class for paginated responses.
+ *
+ * @param <T> the type of content contained in the page response
+ */
 @Getter
 @Setter
 @NoArgsConstructor

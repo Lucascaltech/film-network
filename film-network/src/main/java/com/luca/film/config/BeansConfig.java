@@ -5,13 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -19,50 +12,18 @@ import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * Configuration class that defines application-wide beans.
+ */
 @Configuration
 public class BeansConfig {
-//    private final UserDetailsService userDetailsService;
-
-//    public BeansConfig(UserDetailsService userDetailsService) {
-//        this.userDetailsService = userDetailsService;
-//    }
 
     /**
-     * Create an authentication provider
-     * @return the authentication provider
-     */
-//    @Bean
-//    public AuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(userDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        return authProvider;
-//    }
-
-    /**
-     * Create a password encoder
-     * @return the password encoder
-     */
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-
-    /**
-     *  Create an authentication manager
+     * Creates an {@link AuditorAware} bean to provide auditing functionality.
+     * This bean is used to determine the current user responsible for
+     * creating or modifying entities.
      *
-     * @param configuration the authentication configuration
-     * @return the authentication manager
-     * @throws Exception if an error occurs while creating the authentication manager
-     */
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-//        return configuration.getAuthenticationManager();
-//    }
-
-    /**
-     * Create an auditor aware bean
-     * @return the auditor aware bean
+     * @return an instance of {@link ApplicationAuditAware}
      */
     @Bean
     public AuditorAware<String> auditorAware() {
@@ -70,15 +31,24 @@ public class BeansConfig {
     }
 
     /**
-     * Create a cors filter
-     * @return the cors filter
+     * Creates a {@link CorsFilter} bean to handle Cross-Origin Resource Sharing (CORS).
+     * This configuration allows requests from a specified frontend application
+     * and defines permitted HTTP methods and headers.
+     *
+     * @return a configured {@link CorsFilter} instance
      */
     @Bean
     public CorsFilter corsFilter() {
        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
          final CorsConfiguration config = new CorsConfiguration();
+
+            // Allow credentials for authentication
             config.setAllowCredentials(true);
+
+            // Define allowed origins (update as necessary for production)
             config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+
+            // Define allowed headers
             config.setAllowedHeaders(
                     Arrays.asList(
                             HttpHeaders.ORIGIN,
@@ -86,6 +56,8 @@ public class BeansConfig {
                             HttpHeaders.CONTENT_TYPE,
                             HttpHeaders.AUTHORIZATION
                     ));
+
+            // Define allowed HTTP methods
             config.setAllowedMethods(
                     Arrays.asList(
                             "GET",
@@ -96,6 +68,7 @@ public class BeansConfig {
                     )
             );
 
+            // Register CORS configuration for all endpoints
             source.registerCorsConfiguration("/**", config);
             return new CorsFilter(source);
     }

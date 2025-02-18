@@ -3,7 +3,6 @@ package com.luca.film.feedback;
 import com.luca.film.feedback.dto.FilmFeedbackRequest;
 import com.luca.film.feedback.dto.FilmFeedbackResponse;
 import com.luca.film.film.Film;
-import com.luca.film.user.User;
 import org.springframework.stereotype.Service;
 
 /**
