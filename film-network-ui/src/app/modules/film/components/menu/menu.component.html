@@ -37,17 +37,24 @@
       </ul>
 
       <!-- Search Form and User Info -->
-      <form class="d-flex align-items-center gap-3" role="search">
-        <input class="form-control search-field" type="search" placeholder="Search Film" aria-label="Search">
-        <button class="btn btn-outline-success search-button" type="submit">
-          <i class="fas fa-search "></i>
-        </button>
-        <span class="text-dark-emphasis" >Welcome,</span>
-        <span class="text-capitalize fw-bold text-dark-emphasis">{{getUserInfo()}}</span>
-        <button class="btn btn-link text-danger" type="button" (click)="logout()" title="Logout">
-          <i class="fas fa-sign-out-alt"  ></i>
-        </button>
-      </form>
+
+      <input
+        type="text"
+        class="form-control search-field"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search for a film..."
+      />
+      <button class="btn btn-primary search-button text-white" (click)="onSearch()" type="button">
+        🔍 Search
+      </button>
+      &nbsp;
+      <span class="text-dark-emphasis">Welcome,</span>
+      <span class="text-capitalize fw-bold text-dark-emphasis">{{ getUserInfo() }}</span>
+      <button class="btn btn-link text-danger" type="button" (click)="logout()" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+
     </div>
   </div>
 </nav>

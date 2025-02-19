@@ -10,6 +10,7 @@ li > a {
     border-radius: 5px;
     color: #5f9adb;
     text-decoration: none;
+
   }
 }
 
@@ -28,6 +29,8 @@ li > a {
   &:focus{
     border-color: #5f9adb;
   }
+  width: 200px;
+  margin-right: 0.2rem;
 }
 .logo{
   margin-right: 10px;

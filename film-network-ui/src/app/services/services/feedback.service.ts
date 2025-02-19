@@ -16,8 +16,6 @@ import { CreateFeedback$Params } from '../fn/feedback/create-feedback';
 import { deleteFeedback } from '../fn/feedback/delete-feedback';
 import { DeleteFeedback$Params } from '../fn/feedback/delete-feedback';
 import { FilmFeedbackResponse } from '../models/film-feedback-response';
-import { getAllFeedback } from '../fn/feedback/get-all-feedback';
-import { GetAllFeedback$Params } from '../fn/feedback/get-all-feedback';
 import { getFeedbackById } from '../fn/feedback/get-feedback-by-id';
 import { GetFeedbackById$Params } from '../fn/feedback/get-feedback-by-id';
 import { getFeedbackForFilm } from '../fn/feedback/get-feedback-for-film';
@@ -28,7 +26,7 @@ import { UpdateFeedback$Params } from '../fn/feedback/update-feedback';
 
 
 /**
- * The feedback API
+ * The Feedback API allows users to submit and retrieve feedback for films.
  */
 @Injectable({ providedIn: 'root' })
 export class FeedbackService extends BaseService {
@@ -112,31 +110,6 @@ export class FeedbackService extends BaseService {
       map((r: StrictHttpResponse<{
 }>): {
 } => r.body)
-    );
-  }
-
-  /** Path part for operation `getAllFeedback()` */
-  static readonly GetAllFeedbackPath = '/feedbacks';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getAllFeedback()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getAllFeedback$Response(params?: GetAllFeedback$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<FilmFeedbackResponse>>> {
-    return getAllFeedback(this.http, this.rootUrl, params, context);
-  }
-
-  /**
-   * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getAllFeedback$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  getAllFeedback(params?: GetAllFeedback$Params, context?: HttpContext): Observable<Array<FilmFeedbackResponse>> {
-    return this.getAllFeedback$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Array<FilmFeedbackResponse>>): Array<FilmFeedbackResponse> => r.body)
     );
   }
 

@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OpenApi Specification - Luca",
-    "description": "Openapi documentation ofr Spring Security",
+    "title": "OpenAPI Specification - Luca",
+    "description": "OpenAPI documentation for Spring Security",
     "termsOfService": "Terms of Service",
     "contact": {
       "name": "Luca",
@@ -40,7 +40,7 @@
     },
     {
       "name": "Feedback",
-      "description": "The feedback API"
+      "description": "The Feedback API allows users to submit and retrieve feedback for films."
     }
   ],
   "paths": {
@@ -546,27 +546,6 @@
       }
     },
     "/feedbacks": {
-      "get": {
-        "tags": [
-          "Feedback"
-        ],
-        "operationId": "getAllFeedback",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FilmFeedbackResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "Feedback"
@@ -589,66 +568,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/FilmFeedbackResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/register": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "register",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/authenticate": {
-      "post": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "authenticate",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AuthenticateRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthenticationResponse"
                 }
               }
             }
@@ -794,6 +713,56 @@
         }
       }
     },
+    "/films/search": {
+      "get": {
+        "tags": [
+          "Film"
+        ],
+        "operationId": "searchFilms",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseFilmResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/films/owner/returned": {
       "get": {
         "tags": [
@@ -928,29 +897,6 @@
           }
         }
       }
-    },
-    "/auth/activate-account": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "operationId": "confirmAccount",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1059,8 +1005,7 @@
             ]
           },
           "addedBy": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "createdAt": {
             "type": "string",
@@ -1134,8 +1079,7 @@
             "format": "double"
           },
           "userId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "filmId": {
             "type": "integer",
@@ -1185,8 +1129,7 @@
             "format": "int32"
           },
           "userId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           "ownFeedback": {
             "type": "boolean"
@@ -1198,60 +1141,6 @@
           "lastModifiedAt": {
             "type": "string",
             "format": "date-time"
-          }
-        }
-      },
-      "RegistrationRequest": {
-        "type": "object",
-        "properties": {
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "maxLength": 2147483647,
-            "minLength": 8
-          }
-        },
-        "required": [
-          "email",
-          "firstName",
-          "lastName",
-          "password"
-        ]
-      },
-      "AuthenticateRequest": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "maxLength": 2147483647,
-            "minLength": 8
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ]
-      },
-      "AuthenticationResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          },
-          "id": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
@@ -1390,7 +1279,7 @@
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
-        "description": "JWT auth description",
+        "description": "JWT authentication scheme",
         "in": "header",
         "scheme": "bearer",
         "bearerFormat": "JWT"

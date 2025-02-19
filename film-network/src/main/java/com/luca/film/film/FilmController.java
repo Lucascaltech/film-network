@@ -241,6 +241,6 @@ public class FilmController {
             @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
             @RequestParam(name = "size", defaultValue = "10", required = false) Integer size,
             Authentication authenticatedUser) {
-        return ResponseEntity.ok(filmService.searchFilms(keyword, page, size));
+        return ResponseEntity.ok(filmService.searchFilms(keyword, page, size, authenticatedUser));
     }
 }

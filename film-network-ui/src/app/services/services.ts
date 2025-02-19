@@ -5,4 +5,3 @@
 export { FilmService } from './services/film.service';
 export { FilmRentalHistoryService } from './services/film-rental-history.service';
 export { FeedbackService } from './services/feedback.service';
-export { AuthenticationService } from './services/authentication.service';

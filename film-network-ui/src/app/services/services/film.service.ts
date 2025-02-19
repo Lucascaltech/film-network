@@ -34,6 +34,8 @@ import { rentFilm } from '../fn/film/rent-film';
 import { RentFilm$Params } from '../fn/film/rent-film';
 import { returnRentedFilm } from '../fn/film/return-rented-film';
 import { ReturnRentedFilm$Params } from '../fn/film/return-rented-film';
+import { searchFilms } from '../fn/film/search-films';
+import { SearchFilms$Params } from '../fn/film/search-films';
 import { updateArchivedStatus } from '../fn/film/update-archived-status';
 import { UpdateArchivedStatus$Params } from '../fn/film/update-archived-status';
 import { updateFilm } from '../fn/film/update-film';
@@ -327,6 +329,31 @@ export class FilmService extends BaseService {
   getBorrowedFilms(params?: GetBorrowedFilms$Params, context?: HttpContext): Observable<PageResponseRentedFilmResponse> {
     return this.getBorrowedFilms$Response(params, context).pipe(
       map((r: StrictHttpResponse<PageResponseRentedFilmResponse>): PageResponseRentedFilmResponse => r.body)
+    );
+  }
+
+  /** Path part for operation `searchFilms()` */
+  static readonly SearchFilmsPath = '/films/search';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `searchFilms()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  searchFilms$Response(params: SearchFilms$Params, context?: HttpContext): Observable<StrictHttpResponse<PageResponseFilmResponse>> {
+    return searchFilms(this.http, this.rootUrl, params, context);
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `searchFilms$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  searchFilms(params: SearchFilms$Params, context?: HttpContext): Observable<PageResponseFilmResponse> {
+    return this.searchFilms$Response(params, context).pipe(
+      map((r: StrictHttpResponse<PageResponseFilmResponse>): PageResponseFilmResponse => r.body)
     );
   }
 

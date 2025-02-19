@@ -10,5 +10,5 @@ export interface FilmRentalHistoryResponse {
   returnDate?: string;
   returned?: boolean;
   returnedApproved?: boolean;
-  userId?: number;
+  userId?: string;
 }

@@ -9,7 +9,6 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 import { FilmService } from './services/film.service';
 import { FilmRentalHistoryService } from './services/film-rental-history.service';
 import { FeedbackService } from './services/feedback.service';
-import { AuthenticationService } from './services/authentication.service';
 
 /**
  * Module that provides all services and configuration.
@@ -22,7 +21,6 @@ import { AuthenticationService } from './services/authentication.service';
     FilmService,
     FilmRentalHistoryService,
     FeedbackService,
-    AuthenticationService,
     ApiConfiguration
   ],
 })

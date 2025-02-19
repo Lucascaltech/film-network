@@ -10,5 +10,5 @@ export interface FilmFeedbackResponse {
   ownFeedback?: boolean;
   rating?: number;
   review?: string;
-  userId?: number;
+  userId?: string;
 }

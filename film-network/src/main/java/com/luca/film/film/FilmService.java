@@ -348,9 +348,11 @@ public class FilmService {
  * @param size          The number of records per page.
  * @return A PageResponse containing paginated FilmResponse DTOs matching the search criteria.
  */
-public PageResponse<FilmResponse> searchFilms(String query, int page, int size) {
+public PageResponse<FilmResponse> searchFilms(String query, int page, int size, Authentication authentication) {
+
+
     Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    Page<Film> films = filmRepository.searchFilms(query, pageable);
+    Page<Film> films = filmRepository.searchFilms(query, authentication.getName(),pageable);
 
     List<FilmResponse> responses = films.stream()
             .map(filmMapper::toFilmResponse)

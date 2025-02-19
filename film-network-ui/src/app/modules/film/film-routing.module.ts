@@ -6,6 +6,7 @@ import {MyFilmsComponent} from "./pages/my-films/my-films.component";
 import {BorrowedFilmsComponent} from "./pages/borrowed-films/borrowed-films.component";
 import {ReturnedFilmsComponent} from "./pages/returned-films/returned-films.component";
 import {WishlistComponent} from "./pages/wishlist/wishlist.component";
+import {SearchFilmsComponent} from "./pages/search-films/search-films.component";
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
       {
         path:'my-wishlist',
         component:WishlistComponent
+      },
+      {
+        path:'search',
+        component:SearchFilmsComponent
       }
     ]
   }

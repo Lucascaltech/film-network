@@ -1,0 +1,62 @@
+<div class="m-3 p-3 pb-4 bg-secondary rounded">
+  <h3 class="fw-bold fs-1">Search Results</h3>
+  <hr>
+
+  <!-- Film Cards Display -->
+  <div class="d-flex justify-content-center gap-3 flex-wrap">
+    <app-film-card
+      [film]="film"
+      *ngFor="let film of filmResponse.content"
+      (borrow)="borrowFilm($event)"
+      (details)="onShowFilmDetails($event)">
+    </app-film-card>
+  </div>
+
+  <!-- No Films Found Message -->
+  <div *ngIf="filmResponse.content?.length === 0" class="text-center fw-bold">
+    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>&nbsp; No films found for "{{ searchQuery }}"
+  </div>
+
+  <!-- Pagination Section -->
+  <div class="d-flex justify-content-center gap-2 mt-3" *ngIf="filmResponse.content?.length !== 0">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center p-3">
+        <li class="page-item" [ngClass]="{'disabled': filmResponse.first}">
+          <a class="page-link" (click)="goToFirstPage()" href="javascript:void(0)" aria-label="Previous">
+            <i class="fa-solid fa-angles-left"></i>
+          </a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': filmResponse.first}">
+          <a class="page-link" (click)="onPreviousPage()" href="javascript:void(0)" aria-label="Previous">
+            <i class="fa-solid fa-angle-left"></i>
+          </a>
+        </li>
+        <li class="page-item" *ngFor="let _ of [].constructor(filmResponse.totalPages); let pageIndex = index">
+          <a class="page-link" (click)="goToPage(pageIndex)" href="javascript:void(0)" [class.active]="page === pageIndex">
+            {{ pageIndex + 1 }}
+          </a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': filmResponse.last}">
+          <a class="page-link" (click)="onNextPage()" href="javascript:void(0)" aria-label="Next">
+            <i class="fa-solid fa-chevron-right"></i>
+          </a>
+        </li>
+        <li class="page-item" [ngClass]="{'disabled': filmResponse.last}">
+          <a class="page-link" (click)="goToLastPage()" href="javascript:void(0)" aria-label="Next">
+            <i class="fa-solid fa-angles-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Film Info Modal -->
+<app-film-info-modal
+  *ngIf="showViewFilmModal"
+  [film]="selectedFilm"
+  (closeModal)="onViewFilmModalClose()">
+</app-film-info-modal>
+
+<!-- Snackbar for displaying messages -->
+<app-snackbar [message]="message" [level]="level" *ngIf="message"></app-snackbar>
