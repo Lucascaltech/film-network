@@ -224,4 +224,23 @@ public class FilmController {
         filmService.uploadFilmPoster(file, filmId, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(filmId);
     }
+
+
+    /**
+     * Searches for films by title, director, or genre.
+     *
+     * @param keyword        The search keyword (title, director, or genre).
+     * @param page           The page number.
+     * @param size           The page size.
+     * @param authenticatedUser The authenticated user.
+     * @return A paginated list of films matching the search criteria.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<FilmResponse>> searchFilms(
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) Integer size,
+            Authentication authenticatedUser) {
+        return ResponseEntity.ok(filmService.searchFilms(keyword, page, size));
+    }
 }

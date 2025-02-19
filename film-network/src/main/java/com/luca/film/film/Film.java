@@ -76,14 +76,14 @@ public class Film extends BaseEntity {
      * List of user feedback associated with this film.
      * Mapped by the `film` field in the {@link FilmFeedback} entity.
      */
-    @OneToMany(mappedBy = "film")
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FilmFeedback> feedbacks;
 
     /**
      * List of rental history records for this film.
      * Mapped by the `film` field in the {@link FilmRentalHistory} entity.
      */
-    @OneToMany(mappedBy = "film")
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FilmRentalHistory> histories;
 
 }

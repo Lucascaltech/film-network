@@ -27,12 +27,13 @@ public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHis
      * @return {@code true} if the user has already rented the film, {@code false} otherwise.
      */
     @Query("""
-        SELECT
-            (COUNT(*) > 0) AS isRented
-        FROM FilmRentalHistory filmRentalHistory
-        WHERE filmRentalHistory.userId = :userId
-          AND filmRentalHistory.film.id = :filmId
-        """)
+            SELECT CASE WHEN COUNT(frh) > 0 THEN true ELSE false END
+            FROM FilmRentalHistory frh
+            WHERE frh.userId = :userId
+              AND frh.film.id = :filmId
+              AND frh.returned = true
+              AND frh.returnedApproved = false
+            """)
     boolean isAlreadyRentedByUser(@Param("filmId") Integer filmId, @Param("userId") String userId);
 
     /**
@@ -42,11 +43,23 @@ public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHis
      * @return {@code true} if the film is currently rented and not yet approved for return, {@code false} otherwise.
      */
     @Query("SELECT CASE WHEN COUNT(frh) > 0 THEN true ELSE false END " +
-           "FROM FilmRentalHistory frh " +
-           "WHERE frh.film.id = :filmId " +
-           "AND frh.returned = false " +
-           "AND frh.returnedApproved = false")
+            "FROM FilmRentalHistory frh " +
+            "WHERE frh.film.id = :filmId " +
+            "AND frh.returned = false " +
+            "AND frh.returnedApproved = false")
     boolean isAlreadyRented(@Param("filmId") Integer filmId);
+
+
+    @Query("""
+            SELECT CASE WHEN COUNT(frh) > 0 THEN true ELSE false END
+            FROM FilmRentalHistory frh
+            WHERE frh.userId = :userId
+              AND frh.film.id = :filmId
+              AND frh.returned = false
+              AND frh.returnedApproved = false
+            """)
+    boolean isUserCurrentlyRentingFilm(@Param("filmId") Integer filmId, @Param("userId") String userId);
+
 
     /**
      * Finds a rental record for a specific film rented by a specific user that is not yet returned or approved.
@@ -90,8 +103,8 @@ public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHis
     /**
      * Finds the rental record for a film that has been returned but not yet approved for return.
      *
-     * @param film            The film being checked.
-     * @param returned        Whether the film has been marked as returned.
+     * @param film             The film being checked.
+     * @param returned         Whether the film has been marked as returned.
      * @param returnedApproved Whether the return has been approved.
      * @return An {@link Optional} containing the rental record if found, otherwise empty.
      */

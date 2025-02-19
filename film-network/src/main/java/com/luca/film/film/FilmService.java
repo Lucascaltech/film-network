@@ -44,6 +44,15 @@ public class FilmService {
      * @return The ID of the newly created film.
      */
     public Integer save(FilmRequest filmRequest, Authentication authentication) {
+
+        if (filmRequest.title() ==  null || filmRequest.title().equals("")){
+            throw new RuntimeException("Film title should not be empty");
+        }
+
+        if (filmRequest.director() == null || filmRequest.director().equals("")){
+            throw new RuntimeException("Director should not be empty");
+        }
+
         Film film = filmMapper.toFilm(filmRequest);
         film.setCreatedBy(authentication.getName());
         return filmRepository.save(film).getId();
@@ -135,6 +144,8 @@ public class FilmService {
     public void delete(Integer id) {
         Film film = filmRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Film not found with id: " + id));
+
+        System.out.println("Is film ");
         filmRepository.delete(film);
     }
 
@@ -232,14 +243,15 @@ public class FilmService {
             throw new OperationNotPermittedException("You cannot rent your own film.");
         }
 
-        boolean isAlreadyRentedByUser = filmRentalHistoryRepository.isAlreadyRentedByUser(film.getId(), authentication.getName());
-        if (isAlreadyRentedByUser){
-            throw new OperationNotPermittedException("You have already rented the film");
+        boolean isRrturedApproved = filmRentalHistoryRepository.isAlreadyRentedByUser(film.getId(), authentication.getName());
+        if (isRrturedApproved){
+            throw new OperationNotPermittedException("You have returned the film but it not approved yet");
         }
+
 
         boolean isAlreadyRented = filmRentalHistoryRepository.isAlreadyRented(film.getId());
         if (isAlreadyRented) {
-            throw new OperationNotPermittedException("The film is already rented by another user.");
+            throw new OperationNotPermittedException("Currently, the film is not available for rent.");
         }
 
         FilmRentalHistory rentalRecord = FilmRentalHistory.builder()
@@ -327,4 +339,24 @@ public class FilmService {
         film.setFilmPoster(poster);
         filmRepository.save(film);
     }
+
+    /**
+ * Searches for films based on title, director, or category.
+ *
+ * @param query         The search query (title, director, or category).
+ * @param page          The page number (zero-based index).
+ * @param size          The number of records per page.
+ * @return A PageResponse containing paginated FilmResponse DTOs matching the search criteria.
+ */
+public PageResponse<FilmResponse> searchFilms(String query, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Page<Film> films = filmRepository.searchFilms(query, pageable);
+
+    List<FilmResponse> responses = films.stream()
+            .map(filmMapper::toFilmResponse)
+            .toList();
+
+    return new PageResponse<>(responses, films.getNumber(), films.getSize(),
+            films.getTotalElements(), films.getTotalPages(), films.isFirst(), films.isLast());
+}
 }

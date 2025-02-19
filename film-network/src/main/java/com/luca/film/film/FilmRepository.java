@@ -46,4 +46,19 @@ public interface FilmRepository extends JpaRepository<Film, Integer> {
      */
     Page<Film> findAllByCreatedBy(String createdBy, Pageable pageable);
 
+    /**
+     * Searches for films by title, director, or genre.
+     *
+     * @param keyword  The search keyword (title, director, or genre).
+     * @param pageable Pagination details.
+     * @return A paginated list of films matching the search criteria.
+     */
+    @Query("""
+           SELECT film FROM Film film
+           WHERE film.archive = false
+             AND (LOWER(film.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+             OR LOWER(film.director) LIKE LOWER(CONCAT('%', :keyword, '%'))
+             OR LOWER(CAST(film.genre AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')))
+           """)
+    Page<Film> searchFilms(String keyword, Pageable pageable);
 }
