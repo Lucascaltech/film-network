@@ -187,8 +187,11 @@ public class FilmFeedbackService {
                 .average()
                 .orElse(0.0);
 
-        // Update the film's rating
-        film.setRating(averageRating);
+        // Round based on 3.5 threshold
+    double roundedRating = (averageRating <= 3.5) ? (double) Math.floor(averageRating) : (double) Math.ceil(averageRating);
+
+    // Update the film's rating
+    film.setRating(roundedRating);
         filmRepository.save(film);
     }
 }

@@ -29,20 +29,24 @@ public class FilmFeedbackMapper {
     }
 
     /**
-     * Converts a FilmFeedback entity to a FilmFeedbackResponse DTO.
-     *
-     * @param feedback the FilmFeedback entity
-     * @return the FilmFeedbackResponse DTO
-     */
-    public FilmFeedbackResponse toFilmFeedbackResponse(FilmFeedback feedback) {
-        return FilmFeedbackResponse.builder()
-                .id(feedback.getId())
-                .rating(feedback.getRating())
-                .review(feedback.getReview())
-                .filmId(feedback.getFilm() != null ? feedback.getFilm().getId() : null)
-                .userId(feedback.getUserid() != null ? feedback.getUserid() : null)
-                .createdAt(feedback.getCreatedAt())
-                .lastModifiedAt(feedback.getLastModifiedAt())
-                .build();
-    }
+ * Converts a FilmFeedback entity to a FilmFeedbackResponse DTO.
+ *
+ * @param feedback the FilmFeedback entity
+ * @return the FilmFeedbackResponse DTO
+ */
+public FilmFeedbackResponse toFilmFeedbackResponse(FilmFeedback feedback) {
+    // Round the rating based on the given rules
+    double originalRating = feedback.getRating();
+    double roundedRating = (originalRating <= 3.5) ? (double) Math.floor(originalRating) : (double) Math.ceil(originalRating);
+
+    return FilmFeedbackResponse.builder()
+            .id(feedback.getId())
+            .rating(roundedRating)  // Use rounded rating
+            .review(feedback.getReview())
+            .filmId(feedback.getFilm() != null ? feedback.getFilm().getId() : null)
+            .userId(feedback.getUserid() != null ? feedback.getUserid() : null)
+            .createdAt(feedback.getCreatedAt())
+            .lastModifiedAt(feedback.getLastModifiedAt())
+            .build();
+}
 }

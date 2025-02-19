@@ -57,7 +57,7 @@ public class FilmMapper {
                 .year(film.getYear())
                 .addedBy(film.getCreatedBy())
                 .archive(film.isArchive())
-                .rating(film.getRating())
+                .rating(film.getRating() <=3.5 ? Math.floor(film.getRating()) : Math.ceil(film.getRating()))
                 .genre(film.getGenre())
                 .createdAt(film.getCreatedAt())
                 .lastModifiedAt(film.getLastModifiedAt())
