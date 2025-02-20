@@ -37,16 +37,15 @@ public interface FilmRentalHistoryRepository extends JpaRepository<FilmRentalHis
     boolean isAlreadyRentedByUser(@Param("filmId") Integer filmId, @Param("userId") String userId);
 
     /**
-     * Checks if a film is currently rented and has not yet been returned or approved for return.
+     * Checks if a film is currently rented and has not yet been returned or the return is not approved.
      *
      * @param filmId The ID of the film to check.
-     * @return {@code true} if the film is currently rented and not yet approved for return, {@code false} otherwise.
+     * @return {@code true} if the film is currently rented or return approval is pending, {@code false} otherwise.
      */
     @Query("SELECT CASE WHEN COUNT(frh) > 0 THEN true ELSE false END " +
             "FROM FilmRentalHistory frh " +
             "WHERE frh.film.id = :filmId " +
-            "AND frh.returned = false " +
-            "AND frh.returnedApproved = false")
+            "AND (frh.returned = false OR (frh.returned = true AND frh.returnedApproved = false))")
     boolean isAlreadyRented(@Param("filmId") Integer filmId);
 
 

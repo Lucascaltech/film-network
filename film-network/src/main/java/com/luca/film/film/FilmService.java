@@ -243,15 +243,19 @@ public class FilmService {
             throw new OperationNotPermittedException("You cannot rent your own film.");
         }
 
+        // Check if the user already rented the film and has not yet returned it
+        if (filmRentalHistoryRepository.isUserCurrentlyRentingFilm(filmId, authentication.getName())) {
+            throw new OperationNotPermittedException("The film is rented by you, and you cannot rent it again.");
+        }
+
         boolean isRrturedApproved = filmRentalHistoryRepository.isAlreadyRentedByUser(film.getId(), authentication.getName());
         if (isRrturedApproved){
             throw new OperationNotPermittedException("You have returned the film but it not approved yet");
         }
 
-
-        boolean isAlreadyRented = filmRentalHistoryRepository.isAlreadyRented(film.getId());
-        if (isAlreadyRented) {
-            throw new OperationNotPermittedException("Currently, the film is not available for rent.");
+        // Check if the film is rented by another user or waiting for return approval
+        if (filmRentalHistoryRepository.isAlreadyRented(filmId)) {
+            throw new OperationNotPermittedException("The film is currently rented and unavailable.");
         }
 
         FilmRentalHistory rentalRecord = FilmRentalHistory.builder()
